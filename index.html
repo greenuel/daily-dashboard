@@ -563,7 +563,7 @@ const Summary=({meals,sleep,work,events,goals,timerEl,timerOn})=>{
 /* ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
    APP
 ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê */
-const TABS=[{id:'summary',label:'Summary',icon:'üìä'},{id:'diet',label:'Diet',icon:'ü•ó'},{id:'sleep',label:'Sleep',icon:'üåô'},{id:'work',label:'Work',icon:'‚è∞'},{id:'schedule',label:'Schedule',icon:'üìÖ'}];
+const TABS=[{id:'summary',label:'Summary'},{id:'diet',label:'Diet'},{id:'sleep',label:'Sleep'},{id:'work',label:'Work'},{id:'schedule',label:'Schedule'}];
 
 const App=()=>{
   const [tab,setTab]       = useState('summary');
@@ -627,7 +627,7 @@ const App=()=>{
       <div className="hdr-inner" style={{maxWidth:980,margin:'0 auto',display:'flex',alignItems:'center'}}>
         <div style={{fontWeight:800,fontSize:17,color:'#e2e8f0',marginRight:8,padding:'16px 0',letterSpacing:'-0.4px',flexShrink:0}}>Daily<span style={{color:'#6366f1'}}>.</span></div>
         <nav className="top-nav">
-          {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:'18px 14px',border:'none',background:'none',cursor:'pointer',fontSize:13,fontWeight:tab===t.id?700:500,color:tab===t.id?'#a5b4fc':'#4a4a6a',borderBottom:`2px solid ${tab===t.id?'#6366f1':'transparent'}`,transition:'all 0.15s',display:'flex',alignItems:'center',gap:5,whiteSpace:'nowrap'}}><span>{t.icon}</span>{t.label}</button>)}
+          {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:'18px 14px',border:'none',background:'none',cursor:'pointer',fontSize:13,fontWeight:tab===t.id?700:500,color:tab===t.id?'#a5b4fc':'#4a4a6a',borderBottom:`2px solid ${tab===t.id?'#6366f1':'transparent'}`,transition:'all 0.15s',whiteSpace:'nowrap'}}>{t.label}</button>)}
         </nav>
         <div style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:8}}>
           {conf.sbUrl&&<div title={syncTip} style={{width:8,height:8,borderRadius:'50%',background:syncDot,boxShadow:`0 0 6px ${syncDot}`,animation:syncSt==='syncing'?'pulse 1s ease infinite':'none',flexShrink:0}}/>}
@@ -682,9 +682,8 @@ const App=()=>{
 
     {/* ‚îÄ‚îÄ Bottom nav (mobile only) ‚îÄ‚îÄ */}
     <nav className="bot-nav">
-      {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,border:'none',background:'none',cursor:'pointer',padding:'10px 4px 8px',display:'flex',flexDirection:'column',alignItems:'center',gap:3,color:tab===t.id?'#a5b4fc':'#4a4a6a',borderTop:`2px solid ${tab===t.id?'#6366f1':'transparent'}`,minHeight:56}}>
-        <span style={{fontSize:18,lineHeight:1}}>{t.icon}</span>
-        <span style={{fontSize:10,fontWeight:tab===t.id?700:500,letterSpacing:'0.02em'}}>{t.label}</span>
+      {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,border:'none',background:'none',cursor:'pointer',padding:'12px 4px 10px',display:'flex',flexDirection:'column',alignItems:'center',color:tab===t.id?'#a5b4fc':'#4a4a6a',borderTop:`2px solid ${tab===t.id?'#6366f1':'transparent'}`,minHeight:56}}>
+        <span style={{fontSize:12,fontWeight:tab===t.id?700:500,letterSpacing:'0.02em'}}>{t.label}</span>
       </button>)}
     </nav>
   </div>;
