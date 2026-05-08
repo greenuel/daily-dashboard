@@ -242,7 +242,7 @@ const ScreenshotHelper=({title,hint,section,apiKey,onClose,onAutoFill,children})
         const parsed=parseOCR[section]?.(text)||{};
         const ok=Object.values(parsed).some(v=>v!==''&&v!=null);
         if(ok){onAutoFill(parsed);setState('done');setNote('‚úì Auto-filled (free OCR ‚Äî double-check values)')}
-        else{setState('error');setNote('Couldn\'t read data. Add a Claude API key in ‚öô Settings for much better results.')}
+        else{setState('error');setNote('Couldn\'t read data. Add a Claude API key in Settings for much better results.')}
       }catch(e){setState('error');setNote('OCR error: '+e.message)}
     }
   };
@@ -250,7 +250,7 @@ const ScreenshotHelper=({title,hint,section,apiKey,onClose,onAutoFill,children})
   return<div style={{position:'fixed',inset:0,background:'#000c',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:12}} onClick={e=>{if(e.target===e.currentTarget)onClose()}}>
     <div style={{background:'#13131c',border:'1px solid #22223a',borderRadius:16,width:'100%',maxWidth:1040,maxHeight:'92vh',display:'flex',flexDirection:'column',animation:'fadeIn 0.18s ease'}}>
       <div style={{padding:'14px 18px',borderBottom:'1px solid #22223a',display:'flex',justifyContent:'space-between',alignItems:'center',flexShrink:0}}>
-        <div><span style={{fontWeight:700,fontSize:16}}>üì∏ {title}</span>{hint&&<div style={{fontSize:12,color:'#5a5a8a',marginTop:2}}>{hint}</div>}</div>
+        <div><span style={{fontWeight:700,fontSize:16}}>{title}</span>{hint&&<div style={{fontSize:12,color:'#5a5a8a',marginTop:2}}>{hint}</div>}</div>
         <button onClick={onClose} style={{background:'none',border:'none',color:'#5a5a8a',cursor:'pointer',fontSize:22,padding:'4px 8px',minWidth:44,minHeight:44}}>‚úï</button>
       </div>
       <div className="ssh-body">
@@ -264,14 +264,13 @@ const ScreenshotHelper=({title,hint,section,apiKey,onClose,onAutoFill,children})
           ):(
             <div onClick={()=>fileRef.current.click()} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:12,cursor:'pointer',padding:24,color:'#3a3a5a',minHeight:120}}
               onMouseEnter={e=>e.currentTarget.style.background='#0f0f18'} onMouseLeave={e=>e.currentTarget.style.background=''}>
-              <div style={{fontSize:44}}>üñº</div>
               <div style={{fontSize:15,fontWeight:600,color:'#5a5a8a'}}>Tap to upload screenshot</div>
               <div style={{fontSize:12,color:'#3a3a5a'}}>JPG ¬∑ PNG ¬∑ HEIC ¬∑ WEBP</div>
             </div>
           )}
           {img&&<div style={{padding:'10px 14px',borderTop:'1px solid #1e1e2e',flexShrink:0}}>
             <Btn onClick={run} disabled={state==='loading'} style={{width:'100%'}}>
-              {state==='loading'?<><Spin/>Reading‚Ä¶</>:apiKey?'‚ú® Auto-fill with Claude AI':'‚ú® Auto-fill (free OCR)'}
+              {state==='loading'?<><Spin/>Reading‚Ä¶</>:apiKey?'Auto-fill with Claude AI':'Auto-fill (free OCR)'}
             </Btn>
             {note&&<div style={{marginTop:8,fontSize:12,lineHeight:1.5,color:state==='done'?'#10b981':state==='error'?'#f59e0b':'#6c6c9a'}}>{note}</div>}
           </div>}
@@ -344,7 +343,7 @@ const DietLog=({meals,goals,onAdd,onDelete,onGoals,apiKey})=>{
       <Card><ST>Breakdown</ST><DonutChart protein={tot.pro} carbs={tot.car} fat={tot.fat}/></Card>
     </div>
     <Card>
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Log a Meal</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>üì∏ Screenshot</Btn></div>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Log a Meal</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>+ Screenshot</Btn></div>
       <MF onSubmit={submit}/>
     </Card>
     <Card><ST>Today's Meals</ST>
@@ -396,7 +395,7 @@ const SleepTracker=({entries,onAdd,onDelete,apiKey})=>{
       </div>
     </Card>})()}
     <Card>
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Log Sleep</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>üì∏ Screenshot</Btn></div>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Log Sleep</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>+ Screenshot</Btn></div>
       <SF onSubmit={submit}/>
     </Card>
     <Card><ST>Sleep History</ST>
@@ -455,7 +454,7 @@ const WorkHours=({sessions,onAdd,onDelete,apiKey})=>{
       </div>
     </Card>
     <Card>
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Log Manual Session</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>üì∏ Screenshot</Btn></div>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Log Manual Session</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>+ Screenshot</Btn></div>
       <SF onSubmit={ms}/>
     </Card>
     <Card><ST>Today's Sessions</ST>
@@ -502,12 +501,12 @@ const Schedule=({events,onAdd,onAddMany,onDelete,apiKey})=>{
     {ss&&<ScreenshotHelper title="Add Event from Screenshot" section="schedule" apiKey={apiKey} onClose={()=>setSs(false)} onAutoFill={fill}><ST>Event Details</ST><EF onSubmit={e=>sub(e,()=>setSs(false))}/></ScreenshotHelper>}
     <Card style={{borderColor:'#2e2e52',background:'#111120'}}>
       <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',flexWrap:'wrap',gap:12}}>
-        <div style={{flex:1,minWidth:200}}><div style={{fontWeight:700,color:'#e2e8f0',marginBottom:3}}>üìÖ Google Calendar Sync</div><div style={{fontSize:12,color:'#5a5a8a',lineHeight:1.6}}>In Google Calendar ‚Üí Settings ‚Üí Import &amp; Export ‚Üí Export ‚Üí download .ics ‚Üí import below</div></div>
+        <div style={{flex:1,minWidth:200}}><div style={{fontWeight:700,color:'#e2e8f0',marginBottom:3}}>Google Calendar Sync</div><div style={{fontSize:12,color:'#5a5a8a',lineHeight:1.6}}>In Google Calendar ‚Üí Settings ‚Üí Import &amp; Export ‚Üí Export ‚Üí download .ics ‚Üí import below</div></div>
         <div style={{display:'flex',flexDirection:'column',alignItems:'flex-start',gap:6}}><input ref={icsRef} type="file" accept=".ics,text/calendar" style={{display:'none'}} onChange={importICS}/><Btn variant="ghost" onClick={()=>icsRef.current.click()}>Import .ics file</Btn>{msg&&<div style={{fontSize:12,color:msg.startsWith('‚úì')?'#10b981':'#f59e0b'}}>{msg}</div>}</div>
       </div>
     </Card>
     <Card>
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Add Event</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>üì∏ Screenshot</Btn></div>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Add Event</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>+ Screenshot</Btn></div>
       <EF onSubmit={sub}/>
     </Card>
     <Card><ST>Today's Timeline</ST>
@@ -544,9 +543,9 @@ const Summary=({meals,sleep,work,events,goals,timerEl,timerOn})=>{
   return<div style={{display:'flex',flexDirection:'column',gap:16}}>
     <div style={{fontSize:13,color:'#5a5a8a'}}>{now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</div>
     <div className="g3" style={{gap:16}}>
-      <Card><div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}><span style={{fontSize:18}}>üçΩ</span><span style={{fontSize:12,color:'#6c6c9a',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.06em'}}>Calories</span></div><div style={{fontSize:34,fontWeight:800,color:'#e2e8f0',lineHeight:1,marginBottom:2}}>{cal.toLocaleString()}</div><div style={{fontSize:12,color:'#4a4a6a',marginBottom:10}}>of {goals.calories.toLocaleString()}</div><PB value={cal} max={goals.calories} color="#6366f1" showLabel={false}/></Card>
-      <Card><div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}><span style={{fontSize:18}}>üåô</span><span style={{fontSize:12,color:'#6c6c9a',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.06em'}}>Sleep</span></div>{ls2?<><div style={{fontSize:34,fontWeight:800,lineHeight:1,marginBottom:2,color:sq(ls2.hoursSlept)}}>{ls2.hoursSlept}h</div><div style={{fontSize:12,color:'#4a4a6a',marginBottom:10}}>{ls2.bedtime||'?'} ‚Üí {ls2.wakeTime||'?'}</div><PB value={ls2.hoursSlept} max={9} color={sq(ls2.hoursSlept)} showLabel={false}/></>:<div style={{color:'#3a3a5a',fontSize:13,marginTop:8}}>No data</div>}</Card>
-      <Card><div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}><span style={{fontSize:18}}>‚è±</span><span style={{fontSize:12,color:'#6c6c9a',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.06em'}}>Work</span></div><div style={{fontSize:34,fontWeight:800,color:'#e2e8f0',lineHeight:1,marginBottom:2}}>{fmtHM(twSec)}</div><div style={{fontSize:12,color:'#4a4a6a',marginBottom:10}}>{fmtHM(wkSec)} this week</div><PB value={twSec/3600} max={8} color="#10b981" showLabel={false}/></Card>
+      <Card><ST style={{marginBottom:10}}>Calories</ST><div style={{fontSize:34,fontWeight:800,color:'#e2e8f0',lineHeight:1,marginBottom:2}}>{cal.toLocaleString()}</div><div style={{fontSize:12,color:'#4a4a6a',marginBottom:10}}>of {goals.calories.toLocaleString()}</div><PB value={cal} max={goals.calories} color="#6366f1" showLabel={false}/></Card>
+      <Card><ST style={{marginBottom:10}}>Sleep</ST>{ls2?<><div style={{fontSize:34,fontWeight:800,lineHeight:1,marginBottom:2,color:sq(ls2.hoursSlept)}}>{ls2.hoursSlept}h</div><div style={{fontSize:12,color:'#4a4a6a',marginBottom:10}}>{ls2.bedtime||'?'} - {ls2.wakeTime||'?'}</div><PB value={ls2.hoursSlept} max={9} color={sq(ls2.hoursSlept)} showLabel={false}/></>:<div style={{color:'#3a3a5a',fontSize:13,marginTop:8}}>No data</div>}</Card>
+      <Card><ST style={{marginBottom:10}}>Work</ST><div style={{fontSize:34,fontWeight:800,color:'#e2e8f0',lineHeight:1,marginBottom:2}}>{fmtHM(twSec)}</div><div style={{fontSize:12,color:'#4a4a6a',marginBottom:10}}>{fmtHM(wkSec)} this week</div><PB value={twSec/3600} max={8} color="#10b981" showLabel={false}/></Card>
     </div>
     <Card>
       <ST>Macros</ST>
@@ -632,7 +631,7 @@ const App=()=>{
         <div style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:8}}>
           {conf.sbUrl&&<div title={syncTip} style={{width:8,height:8,borderRadius:'50%',background:syncDot,boxShadow:`0 0 6px ${syncDot}`,animation:syncSt==='syncing'?'pulse 1s ease infinite':'none',flexShrink:0}}/>}
           <button onClick={()=>setShowSet(v=>!v)} style={{background:showSet?'#22223a':'none',border:'none',cursor:'pointer',color:'#6c6c9a',fontSize:20,padding:'10px 12px',borderRadius:8,minWidth:44,minHeight:44}}
-            title="Settings">‚öô</button>
+            title="Settings">Settings</button>
         </div>
       </div>
 
@@ -640,12 +639,12 @@ const App=()=>{
         <div style={{maxWidth:980,margin:'0 auto'}}>
           <div className="g2" style={{gap:24}}>
             <div>
-              <div style={{fontWeight:700,color:'#e2e8f0',marginBottom:4}}>‚ú® Claude AI (screenshot reading)</div>
+              <div style={{fontWeight:700,color:'#e2e8f0',marginBottom:4}}>Claude AI (screenshot reading)</div>
               <div style={{fontSize:12,color:'#5a5a8a',marginBottom:12,lineHeight:1.6}}>Get an API key at <strong style={{color:'#a5b4fc'}}>console.anthropic.com</strong> ‚Üí API Keys. ~$0.001/screenshot.</div>
               <Inp label="Anthropic API Key" type="password" value={conf.anthropicKey} onChange={e=>setConf(p=>({...p,anthropicKey:e.target.value}))} placeholder="sk-ant-‚Ä¶"/>
             </div>
             <div>
-              <div style={{fontWeight:700,color:'#e2e8f0',marginBottom:4}}>‚òÅÔ∏è Supabase (phone sync ‚Äî free)</div>
+              <div style={{fontWeight:700,color:'#e2e8f0',marginBottom:4}}>Supabase (phone sync ‚Äî free)</div>
               <div style={{fontSize:12,color:'#5a5a8a',marginBottom:12,lineHeight:1.6}}>
                 1. Create free account at <strong style={{color:'#a5b4fc'}}>supabase.com</strong><br/>
                 2. New project ‚Üí SQL Editor ‚Üí run:<br/>
