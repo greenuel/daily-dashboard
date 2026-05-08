@@ -11,15 +11,54 @@
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html,body{height:100%}
-    body{background:#0b0b10;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5}
+    body{background:#0b0b10;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;-webkit-text-size-adjust:100%}
     ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:#13131c}::-webkit-scrollbar-thumb{background:#2e2e42;border-radius:4px}
     input[type="number"]::-webkit-inner-spin-button{opacity:0.4}
-    input,select,button{font-family:inherit}
+    input,select,button{font-family:inherit;-webkit-appearance:none}
     input[type="time"]::-webkit-calendar-picker-indicator,
     input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.5);cursor:pointer}
     @keyframes fadeIn{from{opacity:0;transform:scale(0.97)}to{opacity:1;transform:scale(1)}}
     @keyframes spin{to{transform:rotate(360deg)}}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+    /* ‚îÄ‚îÄ responsive grid classes ‚îÄ‚îÄ */
+    .g2{display:grid;grid-template-columns:1fr 1fr}
+    .g3{display:grid;grid-template-columns:repeat(3,1fr)}
+    .g4{display:grid;grid-template-columns:repeat(4,1fr)}
+    .g-nm{display:grid;grid-template-columns:2fr 1fr}
+    .g-wf{display:grid;grid-template-columns:1fr 2fr 1fr 1fr}
+
+    /* ‚îÄ‚îÄ screenshot helper layout ‚îÄ‚îÄ */
+    .ssh-body{display:flex;flex:1;overflow:hidden;min-height:0}
+    .ssh-left{flex:1;border-right:1px solid #22223a;display:flex;flex-direction:column;overflow:auto}
+    .ssh-right{flex:1;overflow:auto;padding:22px}
+
+    /* ‚îÄ‚îÄ nav ‚îÄ‚îÄ */
+    .top-nav{display:flex;flex:1;gap:2px}
+    .bot-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:#0f0f17;border-top:1px solid #1e1e2e;z-index:200;padding-bottom:env(safe-area-inset-bottom,0px)}
+
+    /* ‚îÄ‚îÄ mobile ‚îÄ‚îÄ */
+    @media(max-width:640px){
+      body{font-size:15px}
+      .g2{grid-template-columns:1fr}
+      .g3{grid-template-columns:1fr}
+      .g4{grid-template-columns:1fr 1fr}
+      .g-nm{grid-template-columns:1fr}
+      .g-wf{grid-template-columns:1fr 1fr}
+      .ssh-body{flex-direction:column}
+      .ssh-left{border-right:none;border-bottom:1px solid #22223a;max-height:44vh;flex-shrink:0}
+      .ssh-right{padding:16px}
+      .top-nav{display:none}
+      .bot-nav{display:flex}
+      .main-wrap{padding:14px 12px 82px}
+      .hdr-inner{padding:0 12px}
+      .set-panel{padding:16px 12px}
+    }
+    @media(min-width:641px){
+      .main-wrap{padding:24px}
+      .hdr-inner{padding:0 24px}
+      .set-panel{padding:20px 24px}
+    }
   </style>
 </head>
 <body>
@@ -124,56 +163,55 @@ const icsToEvents=text=>{
 };
 
 /* ‚îÄ‚îÄ‚îÄ primitives ‚îÄ‚îÄ‚îÄ */
-const Card=({children,style})=><div style={{background:'#13131c',border:'1px solid #22223a',borderRadius:14,padding:20,...style}}>{children}</div>;
+const Card=({children,style})=><div style={{background:'#13131c',border:'1px solid #22223a',borderRadius:14,padding:18,...style}}>{children}</div>;
 const ST=({children,style})=><div style={{fontSize:12,fontWeight:700,color:'#5a5a8a',textTransform:'uppercase',letterSpacing:'0.09em',marginBottom:14,...style}}>{children}</div>;
 const PB=({value,max,color='#6366f1',label,unit='',showLabel=true})=>{
   const pct=max>0?Math.min(100,value/max*100):0,over=value>max;
   return<div style={{marginBottom:10}}>
     {showLabel&&<div style={{display:'flex',justifyContent:'space-between',fontSize:12,marginBottom:5,color:'#7878a8'}}><span>{label}</span><span style={{color:over?'#ef4444':'#a0a0c8'}}>{value}{unit} <span style={{color:'#4a4a6a'}}>/ {max}{unit}</span></span></div>}
-    <div style={{background:'#1e1e2e',borderRadius:99,height:7,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:over?'#ef4444':color,width:`${pct}%`,transition:'width 0.4s ease',boxShadow:`0 0 8px ${over?'#ef444455':color+'44'}`}}/></div>
+    <div style={{background:'#1e1e2e',borderRadius:99,height:8,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:over?'#ef4444':color,width:`${pct}%`,transition:'width 0.4s ease',boxShadow:`0 0 8px ${over?'#ef444455':color+'44'}`}}/></div>
   </div>;
 };
 const Inp=({label,style,...p})=><div style={{marginBottom:12,...style}}>
   {label&&<div style={{fontSize:12,color:'#6c6c9a',marginBottom:5,fontWeight:600}}>{label}</div>}
-  <input style={{width:'100%',background:'#0b0b10',border:'1px solid #22223a',borderRadius:9,padding:'9px 13px',color:'#e2e8f0',fontSize:14,outline:'none'}}
+  <input style={{width:'100%',background:'#0b0b10',border:'1px solid #22223a',borderRadius:9,padding:'10px 13px',color:'#e2e8f0',fontSize:15,outline:'none'}}
     onFocus={e=>e.target.style.borderColor='#6366f188'} onBlur={e=>e.target.style.borderColor='#22223a'} {...p}/>
 </div>;
 const Sel=({label,children,style,...p})=><div style={{marginBottom:12,...style}}>
   {label&&<div style={{fontSize:12,color:'#6c6c9a',marginBottom:5,fontWeight:600}}>{label}</div>}
-  <select style={{width:'100%',background:'#0b0b10',border:'1px solid #22223a',borderRadius:9,padding:'9px 13px',color:'#e2e8f0',fontSize:14,outline:'none'}} {...p}>{children}</select>
+  <select style={{width:'100%',background:'#0b0b10',border:'1px solid #22223a',borderRadius:9,padding:'10px 13px',color:'#e2e8f0',fontSize:15,outline:'none'}} {...p}>{children}</select>
 </div>;
 const Btn=({children,variant='primary',size='md',style,...p})=>{
   const bg={primary:'#6366f1',success:'#10b981',danger:'#ef4444',ghost:'#22223a'}[variant]||'#6366f1';
-  return<button style={{background:bg,color:'#fff',border:'none',borderRadius:9,cursor:'pointer',padding:size==='sm'?'6px 13px':'10px 20px',fontSize:size==='sm'?13:14,fontWeight:600,transition:'all 0.15s',opacity:p.disabled?0.45:1,boxShadow:`0 2px 10px ${bg}33`,...style}}
+  return<button style={{background:bg,color:'#fff',border:'none',borderRadius:9,cursor:'pointer',padding:size==='sm'?'8px 14px':'11px 20px',fontSize:size==='sm'?13:15,fontWeight:600,transition:'all 0.15s',opacity:p.disabled?0.45:1,boxShadow:`0 2px 10px ${bg}33`,...style}}
     onMouseEnter={e=>{if(!p.disabled)e.currentTarget.style.filter='brightness(1.12)'}} onMouseLeave={e=>e.currentTarget.style.filter=''} {...p}>{children}</button>;
 };
-const Badge=({children,color})=><span style={{background:color+'22',color,border:`1px solid ${color}44`,borderRadius:6,padding:'2px 9px',fontSize:12,fontWeight:600}}>{children}</span>;
+const Badge=({children,color})=><span style={{background:color+'22',color,border:`1px solid ${color}44`,borderRadius:6,padding:'3px 10px',fontSize:12,fontWeight:600}}>{children}</span>;
 const Spin=()=><div style={{width:14,height:14,border:'2px solid #fff4',borderTopColor:'#fff',borderRadius:'50%',animation:'spin 0.7s linear infinite',display:'inline-block',verticalAlign:'middle',marginRight:7}}/>;
 
 /* ‚îÄ‚îÄ‚îÄ Donut Chart ‚îÄ‚îÄ‚îÄ */
 const DonutChart=({protein,carbs,fat})=>{
-  const total=protein+carbs+fat,r=58,sw=22,sz=160,cx=80,cy=80,C=2*Math.PI*r;
+  const total=protein+carbs+fat,r=52,sw=20,sz=140,cx=70,cy=70,C=2*Math.PI*r;
   const segs=[{v:protein,color:'#6366f1',label:'Protein'},{v:carbs,color:'#10b981',label:'Carbs'},{v:fat,color:'#f59e0b',label:'Fat'}];
   let cum=0;const arcs=segs.map(s=>{const frac=total>0?s.v/total:0;const a={...s,frac,prev:cum};cum+=frac;return a});
   if(!total)return<div style={{display:'flex',alignItems:'center',justifyContent:'center',height:sz,color:'#3a3a5a',fontSize:13}}>No macros logged</div>;
-  return<div style={{display:'flex',alignItems:'center',gap:18}}>
+  return<div style={{display:'flex',alignItems:'center',gap:16,flexWrap:'wrap'}}>
     <svg width={sz} height={sz} style={{flexShrink:0}}>
       <circle cx={cx} cy={cy} r={r} fill="none" stroke="#1e1e2e" strokeWidth={sw}/>
       <g transform={`rotate(-90 ${cx} ${cy})`}>{arcs.map((a,i)=><circle key={i} cx={cx} cy={cy} r={r} fill="none" stroke={a.color} strokeWidth={sw} strokeDasharray={`${a.frac*C} ${C}`} strokeDashoffset={-(a.prev*C)}/>)}</g>
-      <text x={cx} y={cy-7} textAnchor="middle" fill="#e2e8f0" style={{fontSize:22,fontWeight:700}}>{total}g</text>
+      <text x={cx} y={cy-7} textAnchor="middle" fill="#e2e8f0" style={{fontSize:20,fontWeight:700}}>{total}g</text>
       <text x={cx} y={cy+12} textAnchor="middle" fill="#4a4a6a" style={{fontSize:11}}>macros</text>
     </svg>
-    <div style={{flex:1}}>{segs.map(s=><div key={s.label} style={{display:'flex',alignItems:'center',gap:9,marginBottom:8}}><div style={{width:10,height:10,borderRadius:3,background:s.color,flexShrink:0}}/><span style={{color:'#7878a8',fontSize:12,flex:1}}>{s.label}</span><span style={{color:'#e2e8f0',fontWeight:600,fontSize:13}}>{s.v}g</span><span style={{color:'#4a4a6a',fontSize:11}}>{total>0?Math.round(s.v/total*100):0}%</span></div>)}</div>
+    <div style={{flex:1,minWidth:100}}>{segs.map(s=><div key={s.label} style={{display:'flex',alignItems:'center',gap:9,marginBottom:9}}><div style={{width:10,height:10,borderRadius:3,background:s.color,flexShrink:0}}/><span style={{color:'#7878a8',fontSize:13,flex:1}}>{s.label}</span><span style={{color:'#e2e8f0',fontWeight:600,fontSize:13}}>{s.v}g</span><span style={{color:'#4a4a6a',fontSize:11}}>{total>0?Math.round(s.v/total*100):0}%</span></div>)}</div>
   </div>;
 };
 
 /* ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
    SCREENSHOT HELPER
-   Uses Claude API if key set, else free Tesseract OCR
 ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê */
 const ScreenshotHelper=({title,hint,section,apiKey,onClose,onAutoFill,children})=>{
   const [img,setImg]=useState(null);
-  const [state,setState]=useState('idle'); // idle|loading|done|error
+  const [state,setState]=useState('idle');
   const [note,setNote]=useState('');
   const fileRef=useRef();
   useEffect(()=>{const fn=e=>{if(e.key==='Escape')onClose()};window.addEventListener('keydown',fn);return()=>window.removeEventListener('keydown',fn)},[onClose]);
@@ -209,36 +247,36 @@ const ScreenshotHelper=({title,hint,section,apiKey,onClose,onAutoFill,children})
     }
   };
 
-  return<div style={{position:'fixed',inset:0,background:'#000c',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:20}} onClick={e=>{if(e.target===e.currentTarget)onClose()}}>
-    <div style={{background:'#13131c',border:'1px solid #22223a',borderRadius:16,width:'100%',maxWidth:1040,maxHeight:'90vh',display:'flex',flexDirection:'column',animation:'fadeIn 0.18s ease'}}>
-      <div style={{padding:'16px 22px',borderBottom:'1px solid #22223a',display:'flex',justifyContent:'space-between',alignItems:'center',flexShrink:0}}>
+  return<div style={{position:'fixed',inset:0,background:'#000c',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:12}} onClick={e=>{if(e.target===e.currentTarget)onClose()}}>
+    <div style={{background:'#13131c',border:'1px solid #22223a',borderRadius:16,width:'100%',maxWidth:1040,maxHeight:'92vh',display:'flex',flexDirection:'column',animation:'fadeIn 0.18s ease'}}>
+      <div style={{padding:'14px 18px',borderBottom:'1px solid #22223a',display:'flex',justifyContent:'space-between',alignItems:'center',flexShrink:0}}>
         <div><span style={{fontWeight:700,fontSize:16}}>üì∏ {title}</span>{hint&&<div style={{fontSize:12,color:'#5a5a8a',marginTop:2}}>{hint}</div>}</div>
-        <button onClick={onClose} style={{background:'none',border:'none',color:'#5a5a8a',cursor:'pointer',fontSize:20}}>‚úï</button>
+        <button onClick={onClose} style={{background:'none',border:'none',color:'#5a5a8a',cursor:'pointer',fontSize:22,padding:'4px 8px',minWidth:44,minHeight:44}}>‚úï</button>
       </div>
-      <div style={{display:'flex',flex:1,overflow:'hidden',minHeight:0}}>
-        <div style={{flex:1,borderRight:'1px solid #22223a',display:'flex',flexDirection:'column',overflow:'auto'}}>
+      <div className="ssh-body">
+        <div className="ssh-left">
           <input ref={fileRef} type="file" accept="image/*" style={{display:'none'}} onChange={handleFile}/>
           {img?(
-            <div style={{flex:1,padding:16,position:'relative',overflow:'auto'}}>
+            <div style={{flex:1,padding:12,position:'relative',overflow:'auto'}}>
               <img src={img} alt="ss" style={{width:'100%',borderRadius:10,display:'block'}}/>
-              <button onClick={()=>{setImg(null);setState('idle');setNote('');fileRef.current.value=''}} style={{position:'absolute',top:22,right:22,background:'#0b0b10cc',border:'1px solid #22223a',color:'#e2e8f0',borderRadius:7,padding:'4px 10px',cursor:'pointer',fontSize:12}}>Change</button>
+              <button onClick={()=>{setImg(null);setState('idle');setNote('');fileRef.current.value=''}} style={{position:'absolute',top:18,right:18,background:'#0b0b10cc',border:'1px solid #22223a',color:'#e2e8f0',borderRadius:7,padding:'5px 12px',cursor:'pointer',fontSize:13}}>Change</button>
             </div>
           ):(
-            <div onClick={()=>fileRef.current.click()} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:12,cursor:'pointer',padding:32,color:'#3a3a5a'}}
+            <div onClick={()=>fileRef.current.click()} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:12,cursor:'pointer',padding:24,color:'#3a3a5a',minHeight:120}}
               onMouseEnter={e=>e.currentTarget.style.background='#0f0f18'} onMouseLeave={e=>e.currentTarget.style.background=''}>
-              <div style={{fontSize:48}}>üñº</div>
-              <div style={{fontSize:15,fontWeight:600,color:'#5a5a8a'}}>Click to upload screenshot</div>
+              <div style={{fontSize:44}}>üñº</div>
+              <div style={{fontSize:15,fontWeight:600,color:'#5a5a8a'}}>Tap to upload screenshot</div>
               <div style={{fontSize:12,color:'#3a3a5a'}}>JPG ¬∑ PNG ¬∑ HEIC ¬∑ WEBP</div>
             </div>
           )}
-          {img&&<div style={{padding:'12px 16px',borderTop:'1px solid #1e1e2e',flexShrink:0}}>
+          {img&&<div style={{padding:'10px 14px',borderTop:'1px solid #1e1e2e',flexShrink:0}}>
             <Btn onClick={run} disabled={state==='loading'} style={{width:'100%'}}>
               {state==='loading'?<><Spin/>Reading‚Ä¶</>:apiKey?'‚ú® Auto-fill with Claude AI':'‚ú® Auto-fill (free OCR)'}
             </Btn>
             {note&&<div style={{marginTop:8,fontSize:12,lineHeight:1.5,color:state==='done'?'#10b981':state==='error'?'#f59e0b':'#6c6c9a'}}>{note}</div>}
           </div>}
         </div>
-        <div style={{flex:1,overflow:'auto',padding:22}}>{children}</div>
+        <div className="ssh-right">{children}</div>
       </div>
     </div>
   </div>;
@@ -260,25 +298,45 @@ const DietLog=({meals,goals,onAdd,onDelete,onGoals,apiKey})=>{
   const fill=d=>setForm(p=>({...p,calories:d.calories||p.calories,protein:d.protein||p.protein,carbs:d.carbs||p.carbs,fat:d.fat||p.fat}));
   const submit=(e,close)=>{e.preventDefault();if(!form.name||!form.calories)return;onAdd({id:Date.now(),date:todayStr(),...form,calories:+form.calories||0,protein:+form.protein||0,carbs:+form.carbs||0,fat:+form.fat||0});setForm(blank);close?.()};
   const MF=({onSubmit})=><form onSubmit={onSubmit}>
-    <div style={{display:'grid',gridTemplateColumns:'2fr 1fr',gap:12}}>
+    <div className="g-nm" style={{gap:12}}>
       <Inp label="Meal Name" value={form.name} onChange={e=>setForm(p=>({...p,name:e.target.value}))} placeholder="e.g. Chicken & rice" required/>
       <Sel label="Type" value={form.mealType} onChange={e=>setForm(p=>({...p,mealType:e.target.value}))}><option value="breakfast">Breakfast</option><option value="lunch">Lunch</option><option value="dinner">Dinner</option><option value="snack">Snack</option></Sel>
     </div>
-    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:12}}>
+    <div className="g4" style={{gap:12}}>
       <Inp label="Calories" type="number" value={form.calories} onChange={e=>setForm(p=>({...p,calories:e.target.value}))} placeholder="0"/>
       <Inp label="Protein (g)" type="number" value={form.protein} onChange={e=>setForm(p=>({...p,protein:e.target.value}))} placeholder="0"/>
       <Inp label="Carbs (g)" type="number" value={form.carbs} onChange={e=>setForm(p=>({...p,carbs:e.target.value}))} placeholder="0"/>
       <Inp label="Fat (g)" type="number" value={form.fat} onChange={e=>setForm(p=>({...p,fat:e.target.value}))} placeholder="0"/>
     </div>
-    <Btn type="submit">Add Meal</Btn>
+    <Btn type="submit" style={{width:'100%'}}>Add Meal</Btn>
   </form>;
   return<div style={{display:'flex',flexDirection:'column',gap:16}}>
     {ss&&<ScreenshotHelper title="Log Meal from Screenshot" hint="Upload a nutrition app screenshot ‚Äî it'll read the numbers automatically." section="diet" apiKey={apiKey} onClose={()=>setSs(false)} onAutoFill={fill}><ST>Meal Details</ST><MF onSubmit={e=>submit(e,()=>setSs(false))}/></ScreenshotHelper>}
-    <Card><div style={{display:'flex',alignItems:'center',gap:24}}><div style={{flexShrink:0}}><div style={{fontSize:12,color:'#6c6c9a',marginBottom:2}}>Calories Today</div><div style={{fontSize:44,fontWeight:800,lineHeight:1,color:tot.cal>goals.calories?'#ef4444':'#e2e8f0'}}>{tot.cal.toLocaleString()}</div><div style={{fontSize:12,color:'#4a4a6a',marginTop:3}}>of {goals.calories.toLocaleString()} goal</div></div><div style={{flex:1}}><PB value={tot.cal} max={goals.calories} color="#6366f1" showLabel={false}/><div style={{fontSize:12,color:'#4a4a6a',textAlign:'right',marginTop:4}}>{Math.max(0,goals.calories-tot.cal).toLocaleString()} remaining</div></div></div></Card>
-    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+    <Card>
+      <div style={{display:'flex',alignItems:'center',gap:20,flexWrap:'wrap'}}>
+        <div style={{flexShrink:0}}>
+          <div style={{fontSize:12,color:'#6c6c9a',marginBottom:2}}>Calories Today</div>
+          <div style={{fontSize:44,fontWeight:800,lineHeight:1,color:tot.cal>goals.calories?'#ef4444':'#e2e8f0'}}>{tot.cal.toLocaleString()}</div>
+          <div style={{fontSize:12,color:'#4a4a6a',marginTop:3}}>of {goals.calories.toLocaleString()} goal</div>
+        </div>
+        <div style={{flex:1,minWidth:140}}>
+          <PB value={tot.cal} max={goals.calories} color="#6366f1" showLabel={false}/>
+          <div style={{fontSize:12,color:'#4a4a6a',textAlign:'right',marginTop:4}}>{Math.max(0,goals.calories-tot.cal).toLocaleString()} remaining</div>
+        </div>
+      </div>
+    </Card>
+    <div className="g2" style={{gap:16}}>
       <Card>
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Macros</ST><Btn size="sm" variant="ghost" onClick={()=>setShowGoals(v=>!v)}>{showGoals?'Hide':'Edit Goals'}</Btn></div>
-        {showGoals&&<div style={{background:'#0b0b10',borderRadius:10,padding:14,marginBottom:14}}><div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}><Inp label="Calories" type="number" value={gf.calories} onChange={e=>setGf(p=>({...p,calories:+e.target.value}))}/><Inp label="Protein (g)" type="number" value={gf.protein} onChange={e=>setGf(p=>({...p,protein:+e.target.value}))}/><Inp label="Carbs (g)" type="number" value={gf.carbs} onChange={e=>setGf(p=>({...p,carbs:+e.target.value}))}/><Inp label="Fat (g)" type="number" value={gf.fat} onChange={e=>setGf(p=>({...p,fat:+e.target.value}))}/></div><Btn size="sm" onClick={()=>{onGoals(gf);setShowGoals(false)}}>Save Goals</Btn></div>}
+        {showGoals&&<div style={{background:'#0b0b10',borderRadius:10,padding:14,marginBottom:14}}>
+          <div className="g2" style={{gap:10}}>
+            <Inp label="Calories" type="number" value={gf.calories} onChange={e=>setGf(p=>({...p,calories:+e.target.value}))}/>
+            <Inp label="Protein (g)" type="number" value={gf.protein} onChange={e=>setGf(p=>({...p,protein:+e.target.value}))}/>
+            <Inp label="Carbs (g)" type="number" value={gf.carbs} onChange={e=>setGf(p=>({...p,carbs:+e.target.value}))}/>
+            <Inp label="Fat (g)" type="number" value={gf.fat} onChange={e=>setGf(p=>({...p,fat:+e.target.value}))}/>
+          </div>
+          <Btn size="sm" onClick={()=>{onGoals(gf);setShowGoals(false)}}>Save Goals</Btn>
+        </div>}
         <PB value={tot.pro} max={goals.protein} color="#6366f1" label="Protein" unit="g"/>
         <PB value={tot.car} max={goals.carbs} color="#10b981" label="Carbs" unit="g"/>
         <PB value={tot.fat} max={goals.fat} color="#f59e0b" label="Fat" unit="g"/>
@@ -286,16 +344,16 @@ const DietLog=({meals,goals,onAdd,onDelete,onGoals,apiKey})=>{
       <Card><ST>Breakdown</ST><DonutChart protein={tot.pro} carbs={tot.car} fat={tot.fat}/></Card>
     </div>
     <Card>
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Log a Meal</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>üì∏ Fill from Screenshot</Btn></div>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Log a Meal</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>üì∏ Screenshot</Btn></div>
       <MF onSubmit={submit}/>
     </Card>
     <Card><ST>Today's Meals</ST>
       {!td.length?<div style={{color:'#3a3a5a',textAlign:'center',padding:'24px 0',fontSize:13}}>No meals logged yet</div>:
         ['breakfast','lunch','dinner','snack'].map(type=>{const ms=td.filter(m=>m.mealType===type);if(!ms.length)return null;return<div key={type} style={{marginBottom:16}}>
           <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:8}}><div style={{width:7,height:7,borderRadius:99,background:mtC[type]}}/><span style={{fontSize:12,color:'#7878a8',textTransform:'capitalize',fontWeight:700}}>{type}</span><span style={{fontSize:12,color:'#4a4a6a',marginLeft:'auto'}}>{ms.reduce((s,m)=>s+m.calories,0)} cal</span></div>
-          {ms.map(m=><div key={m.id} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 13px',background:'#0b0b10',borderRadius:9,marginBottom:6,borderLeft:`3px solid ${mtC[type]}`}}>
-            <div><div style={{color:'#e2e8f0',fontWeight:600}}>{m.name}</div><div style={{color:'#4a4a6a',fontSize:12,marginTop:2}}>P {m.protein}g ¬∑ C {m.carbs}g ¬∑ F {m.fat}g</div></div>
-            <div style={{display:'flex',alignItems:'center',gap:14}}><span style={{fontWeight:700,color:'#c4c4ff',fontSize:15}}>{m.calories}</span><button onClick={()=>onDelete(m.id)} style={{background:'none',border:'none',color:'#3a3a5a',cursor:'pointer',fontSize:16}}>‚úï</button></div>
+          {ms.map(m=><div key={m.id} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'11px 13px',background:'#0b0b10',borderRadius:9,marginBottom:6,borderLeft:`3px solid ${mtC[type]}`}}>
+            <div style={{flex:1,minWidth:0,marginRight:10}}><div style={{color:'#e2e8f0',fontWeight:600,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{m.name}</div><div style={{color:'#4a4a6a',fontSize:12,marginTop:2}}>P {m.protein}g ¬∑ C {m.carbs}g ¬∑ F {m.fat}g</div></div>
+            <div style={{display:'flex',alignItems:'center',gap:12,flexShrink:0}}><span style={{fontWeight:700,color:'#c4c4ff',fontSize:15}}>{m.calories}</span><button onClick={()=>onDelete(m.id)} style={{background:'none',border:'none',color:'#3a3a5a',cursor:'pointer',fontSize:18,minWidth:32,minHeight:32,display:'flex',alignItems:'center',justifyContent:'center'}}>‚úï</button></div>
           </div>)}
         </div>})}
     </Card>
@@ -314,27 +372,39 @@ const SleepTracker=({entries,onAdd,onDelete,apiKey})=>{
   const fill=d=>setForm(p=>({...p,bedtime:d.bedtime||p.bedtime,wakeTime:d.wakeTime||p.wakeTime,hoursSlept:d.hoursSlept||p.hoursSlept}));
   const submit=(e,close)=>{e.preventDefault();let hrs=parseFloat(form.hoursSlept);if(!hrs&&form.bedtime&&form.wakeTime)hrs=Math.round(minDiff(form.bedtime,form.wakeTime)/60*10)/10;if(!hrs)return;onAdd({id:Date.now(),date:form.date,bedtime:form.bedtime,wakeTime:form.wakeTime,hoursSlept:hrs});setForm(blank);close?.()};
   const SF=({onSubmit})=><form onSubmit={onSubmit}>
-    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:12}}>
+    <div className="g3" style={{gap:12}}>
       <Inp label="Date" type="date" value={form.date} onChange={e=>setForm(p=>({...p,date:e.target.value}))}/>
       <Inp label="Bedtime" type="time" value={form.bedtime} onChange={e=>setForm(p=>({...p,bedtime:e.target.value}))}/>
       <Inp label="Wake Time" type="time" value={form.wakeTime} onChange={e=>setForm(p=>({...p,wakeTime:e.target.value}))}/>
     </div>
     <Inp label="Hours Slept (auto-calculated if blank)" type="number" step="0.1" min="0" max="24" value={form.hoursSlept} onChange={e=>setForm(p=>({...p,hoursSlept:e.target.value}))} placeholder="Leave blank to auto-calculate"/>
-    <Btn type="submit">Log Sleep</Btn>
+    <Btn type="submit" style={{width:'100%'}}>Log Sleep</Btn>
   </form>;
   return<div style={{display:'flex',flexDirection:'column',gap:16}}>
     {ss&&<ScreenshotHelper title="Log Sleep from Screenshot" hint="Upload your iPhone Health sleep screenshot." section="sleep" apiKey={apiKey} onClose={()=>setSs(false)} onAutoFill={fill}><ST>Sleep Details</ST><SF onSubmit={e=>submit(e,()=>setSs(false))}/></ScreenshotHelper>}
-    {last&&(()=>{const q=Q(last.hoursSlept);return<Card><ST>Last Night</ST><div style={{display:'flex',alignItems:'center',gap:28}}><div><div style={{fontSize:52,fontWeight:800,lineHeight:1,color:q.color}}>{last.hoursSlept}h</div><Badge color={q.color}>{q.label}</Badge></div><div style={{flex:1}}><div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:14}}><div><div style={{fontSize:11,color:'#4a4a6a',marginBottom:2}}>Bedtime</div><div style={{fontSize:20,fontWeight:700,color:'#e2e8f0'}}>{last.bedtime||'‚Äî'}</div></div><div><div style={{fontSize:11,color:'#4a4a6a',marginBottom:2}}>Wake Time</div><div style={{fontSize:20,fontWeight:700,color:'#e2e8f0'}}>{last.wakeTime||'‚Äî'}</div></div></div><PB value={last.hoursSlept} max={9} color={q.color} showLabel={false}/><div style={{fontSize:11,color:'#4a4a6a',textAlign:'right',marginTop:3}}>Goal: 8‚Äì9h</div></div></div></Card>})()}
+    {last&&(()=>{const q=Q(last.hoursSlept);return<Card><ST>Last Night</ST>
+      <div style={{display:'flex',alignItems:'center',gap:24,flexWrap:'wrap'}}>
+        <div style={{flexShrink:0}}><div style={{fontSize:52,fontWeight:800,lineHeight:1,color:q.color}}>{last.hoursSlept}h</div><div style={{marginTop:6}}><Badge color={q.color}>{q.label}</Badge></div></div>
+        <div style={{flex:1,minWidth:160}}>
+          <div className="g2" style={{gap:12,marginBottom:14}}>
+            <div><div style={{fontSize:11,color:'#4a4a6a',marginBottom:2}}>Bedtime</div><div style={{fontSize:20,fontWeight:700,color:'#e2e8f0'}}>{last.bedtime||'‚Äî'}</div></div>
+            <div><div style={{fontSize:11,color:'#4a4a6a',marginBottom:2}}>Wake Time</div><div style={{fontSize:20,fontWeight:700,color:'#e2e8f0'}}>{last.wakeTime||'‚Äî'}</div></div>
+          </div>
+          <PB value={last.hoursSlept} max={9} color={q.color} showLabel={false}/>
+          <div style={{fontSize:11,color:'#4a4a6a',textAlign:'right',marginTop:3}}>Goal: 8‚Äì9h</div>
+        </div>
+      </div>
+    </Card>})()}
     <Card>
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Log Sleep</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>üì∏ Fill from Screenshot</Btn></div>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Log Sleep</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>üì∏ Screenshot</Btn></div>
       <SF onSubmit={submit}/>
     </Card>
     <Card><ST>Sleep History</ST>
       {!entries.length?<div style={{color:'#3a3a5a',textAlign:'center',padding:'24px 0',fontSize:13}}>No sleep data yet</div>:
-        [...entries].reverse().map(e=>{const q=Q(e.hoursSlept);return<div key={e.id} style={{display:'flex',alignItems:'center',padding:'12px 14px',background:'#0b0b10',borderRadius:9,marginBottom:8,gap:14}}>
-          <div style={{flex:1}}><div style={{fontWeight:600,color:'#e2e8f0'}}>{e.date}</div><div style={{fontSize:12,color:'#4a4a6a',marginTop:2}}>{e.bedtime&&e.wakeTime?`${e.bedtime} ‚Üí ${e.wakeTime}`:'Times not recorded'}</div></div>
+        [...entries].reverse().map(e=>{const q=Q(e.hoursSlept);return<div key={e.id} style={{display:'flex',alignItems:'center',padding:'12px 14px',background:'#0b0b10',borderRadius:9,marginBottom:8,gap:12}}>
+          <div style={{flex:1,minWidth:0}}><div style={{fontWeight:600,color:'#e2e8f0'}}>{e.date}</div><div style={{fontSize:12,color:'#4a4a6a',marginTop:2}}>{e.bedtime&&e.wakeTime?`${e.bedtime} ‚Üí ${e.wakeTime}`:'Times not recorded'}</div></div>
           <Badge color={q.color}>{e.hoursSlept}h ¬∑ {q.label}</Badge>
-          <button onClick={()=>onDelete(e.id)} style={{background:'none',border:'none',color:'#3a3a5a',cursor:'pointer',fontSize:16}}>‚úï</button>
+          <button onClick={()=>onDelete(e.id)} style={{background:'none',border:'none',color:'#3a3a5a',cursor:'pointer',fontSize:18,minWidth:32,minHeight:32,display:'flex',alignItems:'center',justifyContent:'center'}}>‚úï</button>
         </div>})}
     </Card>
   </div>;
@@ -361,21 +431,40 @@ const WorkHours=({sessions,onAdd,onDelete,apiKey})=>{
   const wkSec=sessions.filter(s=>s.date>=wkStart.toISOString().split('T')[0]).reduce((a,s)=>a+s.durationSeconds,0)+(running?elapsed:0);
   const pad=n=>String(n).padStart(2,'0');
   const disp=`${pad(Math.floor(elapsed/3600))}:${pad(Math.floor((elapsed%3600)/60))}:${pad(elapsed%60)}`;
-  const SF=({onSubmit})=><form onSubmit={onSubmit}><div style={{display:'grid',gridTemplateColumns:'1fr 2fr 1fr 1fr',gap:12}}><Inp label="Date" type="date" value={form.date} onChange={e=>setForm(p=>({...p,date:e.target.value}))}/><Inp label="Label" value={form.label} onChange={e=>setForm(p=>({...p,label:e.target.value}))} placeholder="Work Session"/><Inp label="Start" type="time" value={form.startTime} onChange={e=>setForm(p=>({...p,startTime:e.target.value}))} required/><Inp label="End" type="time" value={form.endTime} onChange={e=>setForm(p=>({...p,endTime:e.target.value}))} required/></div><Btn type="submit">Add Session</Btn></form>;
+  const SF=({onSubmit})=><form onSubmit={onSubmit}>
+    <div className="g-wf" style={{gap:12}}>
+      <Inp label="Date" type="date" value={form.date} onChange={e=>setForm(p=>({...p,date:e.target.value}))}/>
+      <Inp label="Label" value={form.label} onChange={e=>setForm(p=>({...p,label:e.target.value}))} placeholder="Work Session"/>
+      <Inp label="Start" type="time" value={form.startTime} onChange={e=>setForm(p=>({...p,startTime:e.target.value}))} required/>
+      <Inp label="End" type="time" value={form.endTime} onChange={e=>setForm(p=>({...p,endTime:e.target.value}))} required/>
+    </div>
+    <Btn type="submit" style={{width:'100%'}}>Add Session</Btn>
+  </form>;
   return<div style={{display:'flex',flexDirection:'column',gap:16}}>
     {ss&&<ScreenshotHelper title="Log Work from Screenshot" section="work" apiKey={apiKey} onClose={()=>setSs(false)} onAutoFill={fill}><ST>Session Details</ST><SF onSubmit={e=>ms(e,()=>setSs(false))}/></ScreenshotHelper>}
-    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+    <div className="g2" style={{gap:16}}>
       <Card><div style={{fontSize:12,color:'#6c6c9a',marginBottom:4}}>Today</div><div style={{fontSize:38,fontWeight:800,color:'#e2e8f0',lineHeight:1}}>{fmtHM(todaySec)}</div><div style={{fontSize:12,color:'#4a4a6a',marginBottom:10}}>{todaySess.length+(running?1:0)} sessions</div><PB value={todaySec/3600} max={8} color="#10b981" showLabel={false}/><div style={{fontSize:11,color:'#4a4a6a',textAlign:'right'}}>Goal: 8h</div></Card>
       <Card><div style={{fontSize:12,color:'#6c6c9a',marginBottom:4}}>This Week</div><div style={{fontSize:38,fontWeight:800,color:'#e2e8f0',lineHeight:1}}>{fmtHM(wkSec)}</div><div style={{fontSize:12,color:'#4a4a6a',marginBottom:10}}>Goal: 40h</div><PB value={wkSec/3600} max={40} color="#6366f1" showLabel={false}/><div style={{fontSize:11,color:'#4a4a6a',textAlign:'right'}}>{Math.max(0,40-wkSec/3600).toFixed(1)}h remaining</div></Card>
     </div>
-    <Card><ST>Timer</ST><Inp label="What are you working on?" value={tLabel} onChange={e=>{setTLabel(e.target.value);ls.set('tmrLabel',e.target.value)}} placeholder="Session label‚Ä¶" disabled={running}/><div style={{display:'flex',alignItems:'center',gap:20}}><div style={{fontSize:50,fontWeight:800,fontVariantNumeric:'tabular-nums',letterSpacing:'-1px',color:running?'#10b981':'#e2e8f0',textShadow:running?'0 0 20px #10b98155':'none'}}>{disp}</div>{running?<Btn variant="danger" onClick={stopTimer}>‚ñ† Stop &amp; Save</Btn>:<Btn variant="success" onClick={startTimer}>‚ñ∂ Start</Btn>}</div></Card>
     <Card>
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Log Manual Session</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>üì∏ Fill from Screenshot</Btn></div>
+      <ST>Timer</ST>
+      <Inp label="What are you working on?" value={tLabel} onChange={e=>{setTLabel(e.target.value);ls.set('tmrLabel',e.target.value)}} placeholder="Session label‚Ä¶" disabled={running}/>
+      <div style={{display:'flex',alignItems:'center',gap:20,flexWrap:'wrap'}}>
+        <div style={{fontSize:44,fontWeight:800,fontVariantNumeric:'tabular-nums',letterSpacing:'-1px',color:running?'#10b981':'#e2e8f0',textShadow:running?'0 0 20px #10b98155':'none'}}>{disp}</div>
+        {running?<Btn variant="danger" onClick={stopTimer}>‚ñ† Stop &amp; Save</Btn>:<Btn variant="success" onClick={startTimer}>‚ñ∂ Start</Btn>}
+      </div>
+    </Card>
+    <Card>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Log Manual Session</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>üì∏ Screenshot</Btn></div>
       <SF onSubmit={ms}/>
     </Card>
     <Card><ST>Today's Sessions</ST>
-      {running&&<div style={{display:'flex',alignItems:'center',padding:'10px 13px',background:'#10b98111',border:'1px solid #10b98133',borderRadius:9,marginBottom:8,gap:12}}><div style={{width:8,height:8,borderRadius:99,background:'#10b981',boxShadow:'0 0 8px #10b981'}}/><div style={{flex:1}}><div style={{fontWeight:600,color:'#e2e8f0'}}>{tLabel||'Work Session'}</div><div style={{fontSize:12,color:'#4a4a6a'}}>Running‚Ä¶</div></div><span style={{color:'#10b981',fontWeight:700}}>{fmtHMS(elapsed)}</span></div>}
-      {!todaySess.length&&!running?<div style={{color:'#3a3a5a',textAlign:'center',padding:'24px 0',fontSize:13}}>No sessions today</div>:todaySess.map(s=><div key={s.id} style={{display:'flex',alignItems:'center',padding:'10px 13px',background:'#0b0b10',borderRadius:9,marginBottom:7,gap:12}}><div style={{flex:1}}><div style={{fontWeight:600,color:'#e2e8f0'}}>{s.label}</div><div style={{fontSize:12,color:'#4a4a6a',marginTop:2}}>{s.startTime} ‚Üí {s.endTime}</div></div><span style={{color:'#10b981',fontWeight:700}}>{fmtHM(s.durationSeconds)}</span><button onClick={()=>onDelete(s.id)} style={{background:'none',border:'none',color:'#3a3a5a',cursor:'pointer',fontSize:16}}>‚úï</button></div>)}
+      {running&&<div style={{display:'flex',alignItems:'center',padding:'11px 13px',background:'#10b98111',border:'1px solid #10b98133',borderRadius:9,marginBottom:8,gap:12}}><div style={{width:8,height:8,borderRadius:99,background:'#10b981',boxShadow:'0 0 8px #10b981',flexShrink:0}}/><div style={{flex:1,minWidth:0}}><div style={{fontWeight:600,color:'#e2e8f0'}}>{tLabel||'Work Session'}</div><div style={{fontSize:12,color:'#4a4a6a'}}>Running‚Ä¶</div></div><span style={{color:'#10b981',fontWeight:700,flexShrink:0}}>{fmtHMS(elapsed)}</span></div>}
+      {!todaySess.length&&!running?<div style={{color:'#3a3a5a',textAlign:'center',padding:'24px 0',fontSize:13}}>No sessions today</div>:todaySess.map(s=><div key={s.id} style={{display:'flex',alignItems:'center',padding:'11px 13px',background:'#0b0b10',borderRadius:9,marginBottom:7,gap:12}}>
+        <div style={{flex:1,minWidth:0}}><div style={{fontWeight:600,color:'#e2e8f0',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{s.label}</div><div style={{fontSize:12,color:'#4a4a6a',marginTop:2}}>{s.startTime} ‚Üí {s.endTime}</div></div>
+        <span style={{color:'#10b981',fontWeight:700,flexShrink:0}}>{fmtHM(s.durationSeconds)}</span>
+        <button onClick={()=>onDelete(s.id)} style={{background:'none',border:'none',color:'#3a3a5a',cursor:'pointer',fontSize:18,minWidth:32,minHeight:32,display:'flex',alignItems:'center',justifyContent:'center'}}>‚úï</button>
+      </div>)}
     </Card>
   </div>;
 };
@@ -397,22 +486,40 @@ const Schedule=({events,onAdd,onAddMany,onDelete,apiKey})=>{
   const sub=(e,close)=>{e.preventDefault();if(!form.title||!form.startTime||!form.endTime)return;onAdd({id:Date.now(),...form});setForm(blank);close?.()};
   const importICS=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const p=icsToEvents(ev.target.result);const m=p.filter(x=>x.start?.date&&x.end?.date&&!x.start.allDay).map(x=>({id:Date.now()+Math.random(),title:x.summary,date:x.start.date,startTime:x.start.time,endTime:x.end.time,color:PAL[Math.floor(Math.random()*PAL.length)],fromCal:true}));if(!m.length){setMsg('Only all-day events found.');return}onAddMany(m);setMsg(`‚úì Imported ${m.length} events`);setTimeout(()=>setMsg(''),4000)}catch{setMsg('Could not parse .ics file.')}};r.readAsText(f);e.target.value=''};
   const nowY=useMemo(()=>{const n=new Date();return toY(`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`)});
-  const EF=({onSubmit})=><form onSubmit={onSubmit}><div style={{display:'grid',gridTemplateColumns:'2fr 1fr',gap:12}}><Inp label="Title" value={form.title} onChange={e=>setForm(p=>({...p,title:e.target.value}))} placeholder="Event title" required/><Inp label="Date" type="date" value={form.date} onChange={e=>setForm(p=>({...p,date:e.target.value}))}/></div><div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:12}}><Inp label="Start" type="time" value={form.startTime} onChange={e=>setForm(p=>({...p,startTime:e.target.value}))} required/><Inp label="End" type="time" value={form.endTime} onChange={e=>setForm(p=>({...p,endTime:e.target.value}))} required/><div><div style={{fontSize:12,color:'#6c6c9a',marginBottom:5,fontWeight:600}}>Color</div><div style={{display:'flex',gap:7,flexWrap:'wrap'}}>{PAL.map(c=><div key={c} onClick={()=>setForm(p=>({...p,color:c}))} style={{width:26,height:26,borderRadius:'50%',background:c,cursor:'pointer',outline:form.color===c?'3px solid #fff':'3px solid transparent',outlineOffset:2,transition:'all 0.15s'}}/>)}</div></div></div><Btn type="submit">Add Event</Btn></form>;
+  const EF=({onSubmit})=><form onSubmit={onSubmit}>
+    <div className="g-nm" style={{gap:12}}>
+      <Inp label="Title" value={form.title} onChange={e=>setForm(p=>({...p,title:e.target.value}))} placeholder="Event title" required/>
+      <Inp label="Date" type="date" value={form.date} onChange={e=>setForm(p=>({...p,date:e.target.value}))}/>
+    </div>
+    <div className="g3" style={{gap:12}}>
+      <Inp label="Start" type="time" value={form.startTime} onChange={e=>setForm(p=>({...p,startTime:e.target.value}))} required/>
+      <Inp label="End" type="time" value={form.endTime} onChange={e=>setForm(p=>({...p,endTime:e.target.value}))} required/>
+      <div><div style={{fontSize:12,color:'#6c6c9a',marginBottom:5,fontWeight:600}}>Color</div><div style={{display:'flex',gap:7,flexWrap:'wrap',paddingTop:2}}>{PAL.map(c=><div key={c} onClick={()=>setForm(p=>({...p,color:c}))} style={{width:28,height:28,borderRadius:'50%',background:c,cursor:'pointer',outline:form.color===c?'3px solid #fff':'3px solid transparent',outlineOffset:2,transition:'all 0.15s'}}/>)}</div></div>
+    </div>
+    <Btn type="submit" style={{width:'100%'}}>Add Event</Btn>
+  </form>;
   return<div style={{display:'flex',flexDirection:'column',gap:16}}>
     {ss&&<ScreenshotHelper title="Add Event from Screenshot" section="schedule" apiKey={apiKey} onClose={()=>setSs(false)} onAutoFill={fill}><ST>Event Details</ST><EF onSubmit={e=>sub(e,()=>setSs(false))}/></ScreenshotHelper>}
     <Card style={{borderColor:'#2e2e52',background:'#111120'}}>
-      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:12}}>
-        <div><div style={{fontWeight:700,color:'#e2e8f0',marginBottom:3}}>üìÖ Google Calendar Sync</div><div style={{fontSize:12,color:'#5a5a8a',lineHeight:1.6}}>In Google Calendar ‚Üí Settings ‚Üí Import &amp; Export ‚Üí Export ‚Üí download .ics ‚Üí import below</div></div>
-        <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:6}}><input ref={icsRef} type="file" accept=".ics,text/calendar" style={{display:'none'}} onChange={importICS}/><Btn variant="ghost" onClick={()=>icsRef.current.click()}>Import .ics file</Btn>{msg&&<div style={{fontSize:12,color:msg.startsWith('‚úì')?'#10b981':'#f59e0b'}}>{msg}</div>}</div>
+      <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',flexWrap:'wrap',gap:12}}>
+        <div style={{flex:1,minWidth:200}}><div style={{fontWeight:700,color:'#e2e8f0',marginBottom:3}}>üìÖ Google Calendar Sync</div><div style={{fontSize:12,color:'#5a5a8a',lineHeight:1.6}}>In Google Calendar ‚Üí Settings ‚Üí Import &amp; Export ‚Üí Export ‚Üí download .ics ‚Üí import below</div></div>
+        <div style={{display:'flex',flexDirection:'column',alignItems:'flex-start',gap:6}}><input ref={icsRef} type="file" accept=".ics,text/calendar" style={{display:'none'}} onChange={importICS}/><Btn variant="ghost" onClick={()=>icsRef.current.click()}>Import .ics file</Btn>{msg&&<div style={{fontSize:12,color:msg.startsWith('‚úì')?'#10b981':'#f59e0b'}}>{msg}</div>}</div>
       </div>
     </Card>
-    <Card><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Add Event</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>üì∏ Fill from Screenshot</Btn></div><EF onSubmit={sub}/></Card>
+    <Card>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Add Event</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>üì∏ Screenshot</Btn></div>
+      <EF onSubmit={sub}/>
+    </Card>
     <Card><ST>Today's Timeline</ST>
-      <div style={{position:'relative',paddingLeft:54,marginTop:4}}>
-        <div style={{position:'relative',height:TH*HH}}>
-          {Array.from({length:TH+1},(_,i)=>{const h=DS+i;const l=h===0||h===24?'12am':h===12?'12pm':h<12?`${h}am`:`${h-12}pm`;return<div key={h} style={{position:'absolute',left:0,right:0,top:i*HH}}><span style={{position:'absolute',left:-52,top:-8,fontSize:11,color:'#3a3a5a',width:44,textAlign:'right'}}>{l}</span><div style={{borderTop:i===0?'1px solid #2e2e42':'1px solid #1a1a2a',width:'100%'}}/></div>})}
+      <div style={{position:'relative',paddingLeft:50,marginTop:4,overflowX:'auto'}}>
+        <div style={{position:'relative',height:TH*HH,minWidth:240}}>
+          {Array.from({length:TH+1},(_,i)=>{const h=DS+i;const l=h===0||h===24?'12am':h===12?'12pm':h<12?`${h}am`:`${h-12}pm`;return<div key={h} style={{position:'absolute',left:0,right:0,top:i*HH}}><span style={{position:'absolute',left:-48,top:-8,fontSize:11,color:'#3a3a5a',width:42,textAlign:'right'}}>{l}</span><div style={{borderTop:i===0?'1px solid #2e2e42':'1px solid #1a1a2a',width:'100%'}}/></div>})}
           <div style={{position:'absolute',left:0,right:0,top:nowY,borderTop:'2px solid #ef444488',zIndex:10}}><div style={{position:'absolute',left:-6,top:-5,width:10,height:10,borderRadius:'50%',background:'#ef4444'}}/></div>
-          {te.map(ev=>{const top=toY(ev.startTime),height=Math.max(toY(ev.endTime)-top,28);return<div key={ev.id} style={{position:'absolute',left:4,right:0,top,height,background:ev.color+'20',border:`1.5px solid ${ev.color}66`,borderLeft:`4px solid ${ev.color}`,borderRadius:8,padding:'5px 10px',overflow:'hidden'}}><div style={{fontWeight:700,fontSize:13,color:ev.color}}>{ev.title}</div>{height>32&&<div style={{fontSize:11,color:'#5a5a8a'}}>{ev.startTime} ‚Äì {ev.endTime}</div>}<button onClick={()=>onDelete(ev.id)} style={{position:'absolute',top:4,right:6,background:'none',border:'none',color:'#3a3a5a',cursor:'pointer',fontSize:12}}>‚úï</button></div>})}
+          {te.map(ev=>{const top=toY(ev.startTime),height=Math.max(toY(ev.endTime)-top,30);return<div key={ev.id} style={{position:'absolute',left:4,right:0,top,height,background:ev.color+'20',border:`1.5px solid ${ev.color}66`,borderLeft:`4px solid ${ev.color}`,borderRadius:8,padding:'5px 10px',overflow:'hidden'}}>
+            <div style={{fontWeight:700,fontSize:13,color:ev.color}}>{ev.title}</div>
+            {height>32&&<div style={{fontSize:11,color:'#5a5a8a'}}>{ev.startTime} ‚Äì {ev.endTime}</div>}
+            <button onClick={()=>onDelete(ev.id)} style={{position:'absolute',top:4,right:6,background:'none',border:'none',color:'#3a3a5a',cursor:'pointer',fontSize:12,minWidth:24,minHeight:24}}>‚úï</button>
+          </div>})}
           {!te.length&&<div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',color:'#3a3a5a',fontSize:13}}>No events today</div>}
         </div>
       </div>
@@ -436,13 +543,20 @@ const Summary=({meals,sleep,work,events,goals,timerEl,timerOn})=>{
   const sq=h=>h>=8?'#10b981':h>=7?'#6366f1':h>=6?'#f59e0b':'#ef4444';
   return<div style={{display:'flex',flexDirection:'column',gap:16}}>
     <div style={{fontSize:13,color:'#5a5a8a'}}>{now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</div>
-    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:16}}>
+    <div className="g3" style={{gap:16}}>
       <Card><div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}><span style={{fontSize:18}}>üçΩ</span><span style={{fontSize:12,color:'#6c6c9a',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.06em'}}>Calories</span></div><div style={{fontSize:34,fontWeight:800,color:'#e2e8f0',lineHeight:1,marginBottom:2}}>{cal.toLocaleString()}</div><div style={{fontSize:12,color:'#4a4a6a',marginBottom:10}}>of {goals.calories.toLocaleString()}</div><PB value={cal} max={goals.calories} color="#6366f1" showLabel={false}/></Card>
       <Card><div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}><span style={{fontSize:18}}>üåô</span><span style={{fontSize:12,color:'#6c6c9a',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.06em'}}>Sleep</span></div>{ls2?<><div style={{fontSize:34,fontWeight:800,lineHeight:1,marginBottom:2,color:sq(ls2.hoursSlept)}}>{ls2.hoursSlept}h</div><div style={{fontSize:12,color:'#4a4a6a',marginBottom:10}}>{ls2.bedtime||'?'} ‚Üí {ls2.wakeTime||'?'}</div><PB value={ls2.hoursSlept} max={9} color={sq(ls2.hoursSlept)} showLabel={false}/></>:<div style={{color:'#3a3a5a',fontSize:13,marginTop:8}}>No data</div>}</Card>
       <Card><div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}><span style={{fontSize:18}}>‚è±</span><span style={{fontSize:12,color:'#6c6c9a',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.06em'}}>Work</span></div><div style={{fontSize:34,fontWeight:800,color:'#e2e8f0',lineHeight:1,marginBottom:2}}>{fmtHM(twSec)}</div><div style={{fontSize:12,color:'#4a4a6a',marginBottom:10}}>{fmtHM(wkSec)} this week</div><PB value={twSec/3600} max={8} color="#10b981" showLabel={false}/></Card>
     </div>
-    <Card><ST>Macros</ST><div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:16}}><PB value={pro} max={goals.protein} color="#6366f1" label="Protein" unit="g"/><PB value={car} max={goals.carbs} color="#10b981" label="Carbs" unit="g"/><PB value={fat} max={goals.fat} color="#f59e0b" label="Fat" unit="g"/></div></Card>
-    <Card><ST>Today's Schedule</ST>{!te.length?<div style={{color:'#3a3a5a',fontSize:13,padding:'12px 0'}}>No events scheduled</div>:te.map(ev=>{const ic=ev.startTime<=ns&&ev.endTime>=ns,ip=ev.endTime<ns;return<div key={ev.id} style={{display:'flex',alignItems:'center',gap:12,padding:'10px 13px',background:'#0b0b10',borderRadius:9,marginBottom:8,borderLeft:`4px solid ${ip?'#2e2e42':ev.color}`,opacity:ip?0.45:1}}><div style={{flex:1}}><div style={{fontWeight:600,color:'#e2e8f0'}}>{ev.title}</div><div style={{fontSize:12,color:'#4a4a6a',marginTop:2}}>{ev.startTime} ‚Äì {ev.endTime}</div></div>{ic&&<Badge color="#10b981">NOW</Badge>}{!ic&&ev.id===nxt?.id&&<Badge color="#6366f1">NEXT</Badge>}</div>})}</Card>
+    <Card>
+      <ST>Macros</ST>
+      <div className="g3" style={{gap:16}}>
+        <PB value={pro} max={goals.protein} color="#6366f1" label="Protein" unit="g"/>
+        <PB value={car} max={goals.carbs} color="#10b981" label="Carbs" unit="g"/>
+        <PB value={fat} max={goals.fat} color="#f59e0b" label="Fat" unit="g"/>
+      </div>
+    </Card>
+    <Card><ST>Today's Schedule</ST>{!te.length?<div style={{color:'#3a3a5a',fontSize:13,padding:'12px 0'}}>No events scheduled</div>:te.map(ev=>{const ic=ev.startTime<=ns&&ev.endTime>=ns,ip=ev.endTime<ns;return<div key={ev.id} style={{display:'flex',alignItems:'center',gap:12,padding:'11px 13px',background:'#0b0b10',borderRadius:9,marginBottom:8,borderLeft:`4px solid ${ip?'#2e2e42':ev.color}`,opacity:ip?0.45:1}}><div style={{flex:1,minWidth:0}}><div style={{fontWeight:600,color:'#e2e8f0',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{ev.title}</div><div style={{fontSize:12,color:'#4a4a6a',marginTop:2}}>{ev.startTime} ‚Äì {ev.endTime}</div></div>{ic&&<Badge color="#10b981">NOW</Badge>}{!ic&&ev.id===nxt?.id&&<Badge color="#6366f1">NEXT</Badge>}</div>})}</Card>
   </div>;
 };
 
@@ -460,15 +574,13 @@ const App=()=>{
   const [goals,setGoals]   = useState(()=>ls.get('goals',{calories:2000,protein:150,carbs:200,fat:65}));
   const [conf,setConf]     = useState(()=>ls.get('conf',{anthropicKey:'',sbUrl:'',sbKey:''}));
   const [showSet,setShowSet] = useState(false);
-  const [syncSt,setSyncSt]  = useState('idle'); // idle|syncing|synced|error
+  const [syncSt,setSyncSt]  = useState('idle');
   const [elapsed,setElapsed] = useState(()=>{const r=ls.get('tmrRunning',false),s=ls.get('tmrStart',null);return r&&s?Math.floor((Date.now()-s)/1000):0});
   const timerOn = ls.get('tmrRunning',false);
   const syncRef = useRef(null);
 
-  /* timer for Summary */
   useEffect(()=>{if(!timerOn)return;const id=setInterval(()=>setElapsed(Math.floor((Date.now()-ls.get('tmrStart',Date.now()))/1000)),1000);return()=>clearInterval(id)},[timerOn]);
 
-  /* init Supabase + pull on mount */
   useEffect(()=>{
     const c=ls.get('conf',{});
     if(c.sbUrl&&c.sbKey){
@@ -487,7 +599,6 @@ const App=()=>{
     }
   },[]);
 
-  /* persist to localStorage immediately */
   useEffect(()=>ls.set('meals',meals),[meals]);
   useEffect(()=>ls.set('sleep',sleep),[sleep]);
   useEffect(()=>ls.set('work',work),[work]);
@@ -495,7 +606,6 @@ const App=()=>{
   useEffect(()=>ls.set('goals',goals),[goals]);
   useEffect(()=>ls.set('conf',conf),[conf]);
 
-  /* debounced Supabase sync */
   useEffect(()=>{
     if(!conf.sbUrl||!conf.sbKey)return;
     SB.init(conf.sbUrl,conf.sbKey);
@@ -509,33 +619,31 @@ const App=()=>{
   },[meals,sleep,work,events,goals]);
 
   const syncDot = {idle:'#3a3a5a',syncing:'#f59e0b',synced:'#10b981',error:'#ef4444'}[syncSt];
-  const syncTip = {idle:'Not configured',syncing:'Syncing‚Ä¶',synced:'Synced across devices ‚úì',error:'Sync error ‚Äî check Supabase settings'}[syncSt];
+  const syncTip = {idle:'Not configured',syncing:'Syncing‚Ä¶',synced:'Synced ‚úì',error:'Sync error'}[syncSt];
 
   return<div style={{minHeight:'100vh',background:'#0b0b10'}}>
+    {/* ‚îÄ‚îÄ Header ‚îÄ‚îÄ */}
     <header style={{position:'sticky',top:0,zIndex:100,background:'#0f0f17',borderBottom:'1px solid #1e1e2e'}}>
-      <div style={{maxWidth:980,margin:'0 auto',display:'flex',alignItems:'center',padding:'0 24px'}}>
-        <div style={{fontWeight:800,fontSize:17,color:'#e2e8f0',marginRight:8,padding:'18px 0',letterSpacing:'-0.4px'}}>Daily<span style={{color:'#6366f1'}}>.</span></div>
-        <nav style={{display:'flex',flex:1,gap:2}}>
-          {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:'20px 15px',border:'none',background:'none',cursor:'pointer',fontSize:13,fontWeight:tab===t.id?700:500,color:tab===t.id?'#a5b4fc':'#4a4a6a',borderBottom:`2px solid ${tab===t.id?'#6366f1':'transparent'}`,transition:'all 0.15s',display:'flex',alignItems:'center',gap:6}}><span>{t.icon}</span>{t.label}</button>)}
+      <div className="hdr-inner" style={{maxWidth:980,margin:'0 auto',display:'flex',alignItems:'center'}}>
+        <div style={{fontWeight:800,fontSize:17,color:'#e2e8f0',marginRight:8,padding:'16px 0',letterSpacing:'-0.4px',flexShrink:0}}>Daily<span style={{color:'#6366f1'}}>.</span></div>
+        <nav className="top-nav">
+          {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:'18px 14px',border:'none',background:'none',cursor:'pointer',fontSize:13,fontWeight:tab===t.id?700:500,color:tab===t.id?'#a5b4fc':'#4a4a6a',borderBottom:`2px solid ${tab===t.id?'#6366f1':'transparent'}`,transition:'all 0.15s',display:'flex',alignItems:'center',gap:5,whiteSpace:'nowrap'}}><span>{t.icon}</span>{t.label}</button>)}
         </nav>
-        <div style={{display:'flex',alignItems:'center',gap:10}}>
+        <div style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:8}}>
           {conf.sbUrl&&<div title={syncTip} style={{width:8,height:8,borderRadius:'50%',background:syncDot,boxShadow:`0 0 6px ${syncDot}`,animation:syncSt==='syncing'?'pulse 1s ease infinite':'none',flexShrink:0}}/>}
-          <button onClick={()=>setShowSet(v=>!v)} style={{background:showSet?'#22223a':'none',border:'none',cursor:'pointer',color:'#4a4a6a',fontSize:18,padding:'8px 10px',borderRadius:8}}>‚öô</button>
+          <button onClick={()=>setShowSet(v=>!v)} style={{background:showSet?'#22223a':'none',border:'none',cursor:'pointer',color:'#6c6c9a',fontSize:20,padding:'10px 12px',borderRadius:8,minWidth:44,minHeight:44}}
+            title="Settings">‚öô</button>
         </div>
       </div>
 
-      {showSet&&<div style={{borderTop:'1px solid #1e1e2e',background:'#0d0d16',padding:'20px 24px'}}>
+      {showSet&&<div className="set-panel" style={{borderTop:'1px solid #1e1e2e',background:'#0d0d16'}}>
         <div style={{maxWidth:980,margin:'0 auto'}}>
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:24}}>
-
-            {/* Claude API */}
+          <div className="g2" style={{gap:24}}>
             <div>
               <div style={{fontWeight:700,color:'#e2e8f0',marginBottom:4}}>‚ú® Claude AI (screenshot reading)</div>
               <div style={{fontSize:12,color:'#5a5a8a',marginBottom:12,lineHeight:1.6}}>Get an API key at <strong style={{color:'#a5b4fc'}}>console.anthropic.com</strong> ‚Üí API Keys. ~$0.001/screenshot.</div>
               <Inp label="Anthropic API Key" type="password" value={conf.anthropicKey} onChange={e=>setConf(p=>({...p,anthropicKey:e.target.value}))} placeholder="sk-ant-‚Ä¶"/>
             </div>
-
-            {/* Supabase */}
             <div>
               <div style={{fontWeight:700,color:'#e2e8f0',marginBottom:4}}>‚òÅÔ∏è Supabase (phone sync ‚Äî free)</div>
               <div style={{fontSize:12,color:'#5a5a8a',marginBottom:12,lineHeight:1.6}}>
@@ -548,28 +656,37 @@ const App=()=>{
                 </code>
                 3. Settings ‚Üí API ‚Üí copy URL &amp; anon key below
               </div>
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+              <div className="g2" style={{gap:12}}>
                 <Inp label="Project URL" value={conf.sbUrl} onChange={e=>setConf(p=>({...p,sbUrl:e.target.value}))} placeholder="https://xxxx.supabase.co"/>
                 <Inp label="Anon Key" type="password" value={conf.sbKey} onChange={e=>setConf(p=>({...p,sbKey:e.target.value}))} placeholder="eyJ‚Ä¶"/>
               </div>
             </div>
           </div>
-          <div style={{marginTop:16,display:'flex',gap:12,alignItems:'center'}}>
+          <div style={{marginTop:16,display:'flex',gap:12,alignItems:'center',flexWrap:'wrap'}}>
             <Btn onClick={()=>{ls.set('conf',conf);SB.init(conf.sbUrl,conf.sbKey);setShowSet(false)}}>Save Settings</Btn>
-            {syncSt==='error'&&<span style={{color:'#ef4444',fontSize:13}}>Sync error ‚Äî double-check your Supabase URL and anon key, and make sure you ran the SQL above.</span>}
+            {syncSt==='error'&&<span style={{color:'#ef4444',fontSize:13}}>Sync error ‚Äî double-check your Supabase URL and anon key.</span>}
             {syncSt==='synced'&&<span style={{color:'#10b981',fontSize:13}}>‚úì Syncing across devices</span>}
           </div>
         </div>
       </div>}
     </header>
 
-    <main style={{maxWidth:980,margin:'0 auto',padding:24}}>
+    {/* ‚îÄ‚îÄ Main content ‚îÄ‚îÄ */}
+    <main className="main-wrap" style={{maxWidth:980,margin:'0 auto'}}>
       {tab==='summary'  &&<Summary  meals={meals} sleep={sleep} work={work} events={events} goals={goals} timerEl={elapsed} timerOn={timerOn}/>}
       {tab==='diet'     &&<DietLog  meals={meals} goals={goals} onAdd={m=>setMeals(p=>[...p,m])} onDelete={id=>setMeals(p=>p.filter(m=>m.id!==id))} onGoals={setGoals} apiKey={conf.anthropicKey}/>}
       {tab==='sleep'    &&<SleepTracker entries={sleep} onAdd={e=>setSleep(p=>[...p,e])} onDelete={id=>setSleep(p=>p.filter(e=>e.id!==id))} apiKey={conf.anthropicKey}/>}
       {tab==='work'     &&<WorkHours sessions={work} onAdd={s=>setWork(p=>[...p,s])} onDelete={id=>setWork(p=>p.filter(s=>s.id!==id))} apiKey={conf.anthropicKey}/>}
       {tab==='schedule' &&<Schedule events={events} onAdd={e=>setEvents(p=>[...p,e])} onAddMany={es=>setEvents(p=>[...p,...es])} onDelete={id=>setEvents(p=>p.filter(e=>e.id!==id))} apiKey={conf.anthropicKey}/>}
     </main>
+
+    {/* ‚îÄ‚îÄ Bottom nav (mobile only) ‚îÄ‚îÄ */}
+    <nav className="bot-nav">
+      {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,border:'none',background:'none',cursor:'pointer',padding:'10px 4px 8px',display:'flex',flexDirection:'column',alignItems:'center',gap:3,color:tab===t.id?'#a5b4fc':'#4a4a6a',borderTop:`2px solid ${tab===t.id?'#6366f1':'transparent'}`,minHeight:56}}>
+        <span style={{fontSize:18,lineHeight:1}}>{t.icon}</span>
+        <span style={{fontSize:10,fontWeight:tab===t.id?700:500,letterSpacing:'0.02em'}}>{t.label}</span>
+      </button>)}
+    </nav>
   </div>;
 };
 
