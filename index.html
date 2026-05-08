@@ -27,13 +27,13 @@
 <script type="text/babel">
 const {useState,useEffect,useRef,useMemo,useCallback} = React;
 
-/* ─── local storage ─── */
+/* ‚îÄ‚îÄ‚îÄ local storage ‚îÄ‚îÄ‚îÄ */
 const ls = {
   get:(k,d)=>{try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):d}catch{return d}},
   set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}},
 };
 
-/* ─── Supabase sync ─── */
+/* ‚îÄ‚îÄ‚îÄ Supabase sync ‚îÄ‚îÄ‚îÄ */
 const SB = {
   _url:'', _key:'',
   init(url,key){this._url=url;this._key=key},
@@ -58,7 +58,7 @@ const SB = {
   },
 };
 
-/* ─── helpers ─── */
+/* ‚îÄ‚îÄ‚îÄ helpers ‚îÄ‚îÄ‚îÄ */
 const todayStr  = ()=>new Date().toISOString().split('T')[0];
 const fmtHM     = s=>{const h=Math.floor(s/3600),m=Math.floor((s%3600)/60);return`${h}h ${m}m`};
 const fmtHMS    = s=>{const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;return h>0?`${h}h ${m}m`:m>0?`${m}m ${sc}s`:`${sc}s`};
@@ -67,7 +67,7 @@ const minDiff   = (a,b)=>{let d=timeToMin(b)-timeToMin(a);if(d<0)d+=1440;return 
 const normTime  = (t,ap)=>{if(!t)return'';const p=t.match(/(\d{1,2}):(\d{2})/);if(!p)return'';let h=+p[1],m=+p[2];if(ap){const u=ap.trim().toUpperCase();if(u==='PM'&&h!==12)h+=12;if(u==='AM'&&h===12)h=0}return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`};
 const extractTimes=text=>{const re=/\b(\d{1,2}:\d{2})\s*(AM|PM)?\b/gi,seen=new Set(),out=[];let m;while((m=re.exec(text))!==null){const t=normTime(m[1],m[2]);if(t&&!seen.has(t)){seen.add(t);out.push(t)}}return out};
 
-/* ─── Claude prompts ─── */
+/* ‚îÄ‚îÄ‚îÄ Claude prompts ‚îÄ‚îÄ‚îÄ */
 const PROMPTS = {
   sleep:`Extract sleep data from this screenshot. Return ONLY a JSON object, no other text:
 {"bedtime":"HH:MM","wakeTime":"HH:MM","hoursSlept":number}
@@ -83,7 +83,7 @@ Integers only, no units. If missing: {"error":"reason"}.`,
 24-hour time. If not found: {"error":"reason"}.`,
 };
 
-/* ─── free OCR parsers ─── */
+/* ‚îÄ‚îÄ‚îÄ free OCR parsers ‚îÄ‚îÄ‚îÄ */
 const parseOCR = {
   sleep:text=>{
     let hoursSlept=null;
@@ -106,7 +106,7 @@ const parseOCR = {
   },
 };
 
-/* ─── ICS parser ─── */
+/* ‚îÄ‚îÄ‚îÄ ICS parser ‚îÄ‚îÄ‚îÄ */
 const icsToEvents=text=>{
   const norm=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
   const lines=[];let prev='';
@@ -123,7 +123,7 @@ const icsToEvents=text=>{
   return events;
 };
 
-/* ─── primitives ─── */
+/* ‚îÄ‚îÄ‚îÄ primitives ‚îÄ‚îÄ‚îÄ */
 const Card=({children,style})=><div style={{background:'#13131c',border:'1px solid #22223a',borderRadius:14,padding:20,...style}}>{children}</div>;
 const ST=({children,style})=><div style={{fontSize:12,fontWeight:700,color:'#5a5a8a',textTransform:'uppercase',letterSpacing:'0.09em',marginBottom:14,...style}}>{children}</div>;
 const PB=({value,max,color='#6366f1',label,unit='',showLabel=true})=>{
@@ -150,7 +150,7 @@ const Btn=({children,variant='primary',size='md',style,...p})=>{
 const Badge=({children,color})=><span style={{background:color+'22',color,border:`1px solid ${color}44`,borderRadius:6,padding:'2px 9px',fontSize:12,fontWeight:600}}>{children}</span>;
 const Spin=()=><div style={{width:14,height:14,border:'2px solid #fff4',borderTopColor:'#fff',borderRadius:'50%',animation:'spin 0.7s linear infinite',display:'inline-block',verticalAlign:'middle',marginRight:7}}/>;
 
-/* ─── Donut Chart ─── */
+/* ‚îÄ‚îÄ‚îÄ Donut Chart ‚îÄ‚îÄ‚îÄ */
 const DonutChart=({protein,carbs,fat})=>{
   const total=protein+carbs+fat,r=58,sw=22,sz=160,cx=80,cy=80,C=2*Math.PI*r;
   const segs=[{v:protein,color:'#6366f1',label:'Protein'},{v:carbs,color:'#10b981',label:'Carbs'},{v:fat,color:'#f59e0b',label:'Fat'}];
@@ -167,10 +167,10 @@ const DonutChart=({protein,carbs,fat})=>{
   </div>;
 };
 
-/* ══════════════════════════════════════
+/* ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
    SCREENSHOT HELPER
    Uses Claude API if key set, else free Tesseract OCR
-══════════════════════════════════════ */
+‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê */
 const ScreenshotHelper=({title,hint,section,apiKey,onClose,onAutoFill,children})=>{
   const [img,setImg]=useState(null);
   const [state,setState]=useState('idle'); // idle|loading|done|error
@@ -184,7 +184,7 @@ const ScreenshotHelper=({title,hint,section,apiKey,onClose,onAutoFill,children})
     if(!img)return;
     setState('loading');
     if(apiKey){
-      setNote('Analyzing with Claude AI…');
+      setNote('Analyzing with Claude AI‚Ä¶');
       try{
         const b64=img.split(',')[1],mt=img.match(/data:([^;]+)/)?.[1]||'image/jpeg';
         const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
@@ -195,16 +195,16 @@ const ScreenshotHelper=({title,hint,section,apiKey,onClose,onAutoFill,children})
         if(!match)throw new Error('No JSON found');
         const parsed=JSON.parse(match[0]);
         if(parsed.error)throw new Error(parsed.error);
-        onAutoFill(parsed);setState('done');setNote('✓ Auto-filled with Claude AI');
+        onAutoFill(parsed);setState('done');setNote('‚úì Auto-filled with Claude AI');
       }catch(e){setState('error');setNote('Error: '+e.message)}
     }else{
-      setNote('Downloading OCR engine (first time ~10MB)…');
+      setNote('Downloading OCR engine (first time ~10MB)‚Ä¶');
       try{
-        const{data:{text}}=await Tesseract.recognize(img,'eng',{logger:m=>{if(m.status==='recognizing text')setNote(`Reading… ${Math.round(m.progress*100)}%`)}});
+        const{data:{text}}=await Tesseract.recognize(img,'eng',{logger:m=>{if(m.status==='recognizing text')setNote(`Reading‚Ä¶ ${Math.round(m.progress*100)}%`)}});
         const parsed=parseOCR[section]?.(text)||{};
         const ok=Object.values(parsed).some(v=>v!==''&&v!=null);
-        if(ok){onAutoFill(parsed);setState('done');setNote('✓ Auto-filled (free OCR — double-check values)')}
-        else{setState('error');setNote('Couldn\'t read data. Add a Claude API key in ⚙ Settings for much better results.')}
+        if(ok){onAutoFill(parsed);setState('done');setNote('‚úì Auto-filled (free OCR ‚Äî double-check values)')}
+        else{setState('error');setNote('Couldn\'t read data. Add a Claude API key in ‚öô Settings for much better results.')}
       }catch(e){setState('error');setNote('OCR error: '+e.message)}
     }
   };
@@ -212,8 +212,8 @@ const ScreenshotHelper=({title,hint,section,apiKey,onClose,onAutoFill,children})
   return<div style={{position:'fixed',inset:0,background:'#000c',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:20}} onClick={e=>{if(e.target===e.currentTarget)onClose()}}>
     <div style={{background:'#13131c',border:'1px solid #22223a',borderRadius:16,width:'100%',maxWidth:1040,maxHeight:'90vh',display:'flex',flexDirection:'column',animation:'fadeIn 0.18s ease'}}>
       <div style={{padding:'16px 22px',borderBottom:'1px solid #22223a',display:'flex',justifyContent:'space-between',alignItems:'center',flexShrink:0}}>
-        <div><span style={{fontWeight:700,fontSize:16}}>📸 {title}</span>{hint&&<div style={{fontSize:12,color:'#5a5a8a',marginTop:2}}>{hint}</div>}</div>
-        <button onClick={onClose} style={{background:'none',border:'none',color:'#5a5a8a',cursor:'pointer',fontSize:20}}>✕</button>
+        <div><span style={{fontWeight:700,fontSize:16}}>üì∏ {title}</span>{hint&&<div style={{fontSize:12,color:'#5a5a8a',marginTop:2}}>{hint}</div>}</div>
+        <button onClick={onClose} style={{background:'none',border:'none',color:'#5a5a8a',cursor:'pointer',fontSize:20}}>‚úï</button>
       </div>
       <div style={{display:'flex',flex:1,overflow:'hidden',minHeight:0}}>
         <div style={{flex:1,borderRight:'1px solid #22223a',display:'flex',flexDirection:'column',overflow:'auto'}}>
@@ -226,14 +226,14 @@ const ScreenshotHelper=({title,hint,section,apiKey,onClose,onAutoFill,children})
           ):(
             <div onClick={()=>fileRef.current.click()} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:12,cursor:'pointer',padding:32,color:'#3a3a5a'}}
               onMouseEnter={e=>e.currentTarget.style.background='#0f0f18'} onMouseLeave={e=>e.currentTarget.style.background=''}>
-              <div style={{fontSize:48}}>🖼</div>
+              <div style={{fontSize:48}}>üñº</div>
               <div style={{fontSize:15,fontWeight:600,color:'#5a5a8a'}}>Click to upload screenshot</div>
-              <div style={{fontSize:12,color:'#3a3a5a'}}>JPG · PNG · HEIC · WEBP</div>
+              <div style={{fontSize:12,color:'#3a3a5a'}}>JPG ¬∑ PNG ¬∑ HEIC ¬∑ WEBP</div>
             </div>
           )}
           {img&&<div style={{padding:'12px 16px',borderTop:'1px solid #1e1e2e',flexShrink:0}}>
             <Btn onClick={run} disabled={state==='loading'} style={{width:'100%'}}>
-              {state==='loading'?<><Spin/>Reading…</>:apiKey?'✨ Auto-fill with Claude AI':'✨ Auto-fill (free OCR)'}
+              {state==='loading'?<><Spin/>Reading‚Ä¶</>:apiKey?'‚ú® Auto-fill with Claude AI':'‚ú® Auto-fill (free OCR)'}
             </Btn>
             {note&&<div style={{marginTop:8,fontSize:12,lineHeight:1.5,color:state==='done'?'#10b981':state==='error'?'#f59e0b':'#6c6c9a'}}>{note}</div>}
           </div>}
@@ -244,9 +244,9 @@ const ScreenshotHelper=({title,hint,section,apiKey,onClose,onAutoFill,children})
   </div>;
 };
 
-/* ══════════════════════════════════════
+/* ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
    DIET LOG
-══════════════════════════════════════ */
+‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê */
 const DietLog=({meals,goals,onAdd,onDelete,onGoals,apiKey})=>{
   const blank={name:'',calories:'',protein:'',carbs:'',fat:'',mealType:'breakfast'};
   const [form,setForm]=useState(blank);
@@ -273,7 +273,7 @@ const DietLog=({meals,goals,onAdd,onDelete,onGoals,apiKey})=>{
     <Btn type="submit">Add Meal</Btn>
   </form>;
   return<div style={{display:'flex',flexDirection:'column',gap:16}}>
-    {ss&&<ScreenshotHelper title="Log Meal from Screenshot" hint="Upload a nutrition app screenshot — it'll read the numbers automatically." section="diet" apiKey={apiKey} onClose={()=>setSs(false)} onAutoFill={fill}><ST>Meal Details</ST><MF onSubmit={e=>submit(e,()=>setSs(false))}/></ScreenshotHelper>}
+    {ss&&<ScreenshotHelper title="Log Meal from Screenshot" hint="Upload a nutrition app screenshot ‚Äî it'll read the numbers automatically." section="diet" apiKey={apiKey} onClose={()=>setSs(false)} onAutoFill={fill}><ST>Meal Details</ST><MF onSubmit={e=>submit(e,()=>setSs(false))}/></ScreenshotHelper>}
     <Card><div style={{display:'flex',alignItems:'center',gap:24}}><div style={{flexShrink:0}}><div style={{fontSize:12,color:'#6c6c9a',marginBottom:2}}>Calories Today</div><div style={{fontSize:44,fontWeight:800,lineHeight:1,color:tot.cal>goals.calories?'#ef4444':'#e2e8f0'}}>{tot.cal.toLocaleString()}</div><div style={{fontSize:12,color:'#4a4a6a',marginTop:3}}>of {goals.calories.toLocaleString()} goal</div></div><div style={{flex:1}}><PB value={tot.cal} max={goals.calories} color="#6366f1" showLabel={false}/><div style={{fontSize:12,color:'#4a4a6a',textAlign:'right',marginTop:4}}>{Math.max(0,goals.calories-tot.cal).toLocaleString()} remaining</div></div></div></Card>
     <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
       <Card>
@@ -286,7 +286,7 @@ const DietLog=({meals,goals,onAdd,onDelete,onGoals,apiKey})=>{
       <Card><ST>Breakdown</ST><DonutChart protein={tot.pro} carbs={tot.car} fat={tot.fat}/></Card>
     </div>
     <Card>
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Log a Meal</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>📸 Fill from Screenshot</Btn></div>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Log a Meal</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>üì∏ Fill from Screenshot</Btn></div>
       <MF onSubmit={submit}/>
     </Card>
     <Card><ST>Today's Meals</ST>
@@ -294,17 +294,17 @@ const DietLog=({meals,goals,onAdd,onDelete,onGoals,apiKey})=>{
         ['breakfast','lunch','dinner','snack'].map(type=>{const ms=td.filter(m=>m.mealType===type);if(!ms.length)return null;return<div key={type} style={{marginBottom:16}}>
           <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:8}}><div style={{width:7,height:7,borderRadius:99,background:mtC[type]}}/><span style={{fontSize:12,color:'#7878a8',textTransform:'capitalize',fontWeight:700}}>{type}</span><span style={{fontSize:12,color:'#4a4a6a',marginLeft:'auto'}}>{ms.reduce((s,m)=>s+m.calories,0)} cal</span></div>
           {ms.map(m=><div key={m.id} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 13px',background:'#0b0b10',borderRadius:9,marginBottom:6,borderLeft:`3px solid ${mtC[type]}`}}>
-            <div><div style={{color:'#e2e8f0',fontWeight:600}}>{m.name}</div><div style={{color:'#4a4a6a',fontSize:12,marginTop:2}}>P {m.protein}g · C {m.carbs}g · F {m.fat}g</div></div>
-            <div style={{display:'flex',alignItems:'center',gap:14}}><span style={{fontWeight:700,color:'#c4c4ff',fontSize:15}}>{m.calories}</span><button onClick={()=>onDelete(m.id)} style={{background:'none',border:'none',color:'#3a3a5a',cursor:'pointer',fontSize:16}}>✕</button></div>
+            <div><div style={{color:'#e2e8f0',fontWeight:600}}>{m.name}</div><div style={{color:'#4a4a6a',fontSize:12,marginTop:2}}>P {m.protein}g ¬∑ C {m.carbs}g ¬∑ F {m.fat}g</div></div>
+            <div style={{display:'flex',alignItems:'center',gap:14}}><span style={{fontWeight:700,color:'#c4c4ff',fontSize:15}}>{m.calories}</span><button onClick={()=>onDelete(m.id)} style={{background:'none',border:'none',color:'#3a3a5a',cursor:'pointer',fontSize:16}}>‚úï</button></div>
           </div>)}
-        </div>)}
+        </div>})}
     </Card>
   </div>;
 };
 
-/* ══════════════════════════════════════
+/* ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
    SLEEP TRACKER
-══════════════════════════════════════ */
+‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê */
 const SleepTracker=({entries,onAdd,onDelete,apiKey})=>{
   const blank={date:todayStr(),bedtime:'',wakeTime:'',hoursSlept:''};
   const [form,setForm]=useState(blank);
@@ -324,25 +324,25 @@ const SleepTracker=({entries,onAdd,onDelete,apiKey})=>{
   </form>;
   return<div style={{display:'flex',flexDirection:'column',gap:16}}>
     {ss&&<ScreenshotHelper title="Log Sleep from Screenshot" hint="Upload your iPhone Health sleep screenshot." section="sleep" apiKey={apiKey} onClose={()=>setSs(false)} onAutoFill={fill}><ST>Sleep Details</ST><SF onSubmit={e=>submit(e,()=>setSs(false))}/></ScreenshotHelper>}
-    {last&&(()=>{const q=Q(last.hoursSlept);return<Card><ST>Last Night</ST><div style={{display:'flex',alignItems:'center',gap:28}}><div><div style={{fontSize:52,fontWeight:800,lineHeight:1,color:q.color}}>{last.hoursSlept}h</div><Badge color={q.color}>{q.label}</Badge></div><div style={{flex:1}}><div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:14}}><div><div style={{fontSize:11,color:'#4a4a6a',marginBottom:2}}>Bedtime</div><div style={{fontSize:20,fontWeight:700,color:'#e2e8f0'}}>{last.bedtime||'—'}</div></div><div><div style={{fontSize:11,color:'#4a4a6a',marginBottom:2}}>Wake Time</div><div style={{fontSize:20,fontWeight:700,color:'#e2e8f0'}}>{last.wakeTime||'—'}</div></div></div><PB value={last.hoursSlept} max={9} color={q.color} showLabel={false}/><div style={{fontSize:11,color:'#4a4a6a',textAlign:'right',marginTop:3}}>Goal: 8–9h</div></div></div></Card>})()}
+    {last&&(()=>{const q=Q(last.hoursSlept);return<Card><ST>Last Night</ST><div style={{display:'flex',alignItems:'center',gap:28}}><div><div style={{fontSize:52,fontWeight:800,lineHeight:1,color:q.color}}>{last.hoursSlept}h</div><Badge color={q.color}>{q.label}</Badge></div><div style={{flex:1}}><div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:14}}><div><div style={{fontSize:11,color:'#4a4a6a',marginBottom:2}}>Bedtime</div><div style={{fontSize:20,fontWeight:700,color:'#e2e8f0'}}>{last.bedtime||'‚Äî'}</div></div><div><div style={{fontSize:11,color:'#4a4a6a',marginBottom:2}}>Wake Time</div><div style={{fontSize:20,fontWeight:700,color:'#e2e8f0'}}>{last.wakeTime||'‚Äî'}</div></div></div><PB value={last.hoursSlept} max={9} color={q.color} showLabel={false}/><div style={{fontSize:11,color:'#4a4a6a',textAlign:'right',marginTop:3}}>Goal: 8‚Äì9h</div></div></div></Card>})()}
     <Card>
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Log Sleep</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>📸 Fill from Screenshot</Btn></div>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Log Sleep</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>üì∏ Fill from Screenshot</Btn></div>
       <SF onSubmit={submit}/>
     </Card>
     <Card><ST>Sleep History</ST>
       {!entries.length?<div style={{color:'#3a3a5a',textAlign:'center',padding:'24px 0',fontSize:13}}>No sleep data yet</div>:
         [...entries].reverse().map(e=>{const q=Q(e.hoursSlept);return<div key={e.id} style={{display:'flex',alignItems:'center',padding:'12px 14px',background:'#0b0b10',borderRadius:9,marginBottom:8,gap:14}}>
-          <div style={{flex:1}}><div style={{fontWeight:600,color:'#e2e8f0'}}>{e.date}</div><div style={{fontSize:12,color:'#4a4a6a',marginTop:2}}>{e.bedtime&&e.wakeTime?`${e.bedtime} → ${e.wakeTime}`:'Times not recorded'}</div></div>
-          <Badge color={q.color}>{e.hoursSlept}h · {q.label}</Badge>
-          <button onClick={()=>onDelete(e.id)} style={{background:'none',border:'none',color:'#3a3a5a',cursor:'pointer',fontSize:16}}>✕</button>
-        </div>)}
+          <div style={{flex:1}}><div style={{fontWeight:600,color:'#e2e8f0'}}>{e.date}</div><div style={{fontSize:12,color:'#4a4a6a',marginTop:2}}>{e.bedtime&&e.wakeTime?`${e.bedtime} ‚Üí ${e.wakeTime}`:'Times not recorded'}</div></div>
+          <Badge color={q.color}>{e.hoursSlept}h ¬∑ {q.label}</Badge>
+          <button onClick={()=>onDelete(e.id)} style={{background:'none',border:'none',color:'#3a3a5a',cursor:'pointer',fontSize:16}}>‚úï</button>
+        </div>})}
     </Card>
   </div>;
 };
 
-/* ══════════════════════════════════════
+/* ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
    WORK HOURS
-══════════════════════════════════════ */
+‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê */
 const WorkHours=({sessions,onAdd,onDelete,apiKey})=>{
   const [form,setForm]=useState({date:todayStr(),startTime:'',endTime:'',label:''});
   const [running,setRunning]=useState(()=>ls.get('tmrRunning',false));
@@ -368,21 +368,21 @@ const WorkHours=({sessions,onAdd,onDelete,apiKey})=>{
       <Card><div style={{fontSize:12,color:'#6c6c9a',marginBottom:4}}>Today</div><div style={{fontSize:38,fontWeight:800,color:'#e2e8f0',lineHeight:1}}>{fmtHM(todaySec)}</div><div style={{fontSize:12,color:'#4a4a6a',marginBottom:10}}>{todaySess.length+(running?1:0)} sessions</div><PB value={todaySec/3600} max={8} color="#10b981" showLabel={false}/><div style={{fontSize:11,color:'#4a4a6a',textAlign:'right'}}>Goal: 8h</div></Card>
       <Card><div style={{fontSize:12,color:'#6c6c9a',marginBottom:4}}>This Week</div><div style={{fontSize:38,fontWeight:800,color:'#e2e8f0',lineHeight:1}}>{fmtHM(wkSec)}</div><div style={{fontSize:12,color:'#4a4a6a',marginBottom:10}}>Goal: 40h</div><PB value={wkSec/3600} max={40} color="#6366f1" showLabel={false}/><div style={{fontSize:11,color:'#4a4a6a',textAlign:'right'}}>{Math.max(0,40-wkSec/3600).toFixed(1)}h remaining</div></Card>
     </div>
-    <Card><ST>Timer</ST><Inp label="What are you working on?" value={tLabel} onChange={e=>{setTLabel(e.target.value);ls.set('tmrLabel',e.target.value)}} placeholder="Session label…" disabled={running}/><div style={{display:'flex',alignItems:'center',gap:20}}><div style={{fontSize:50,fontWeight:800,fontVariantNumeric:'tabular-nums',letterSpacing:'-1px',color:running?'#10b981':'#e2e8f0',textShadow:running?'0 0 20px #10b98155':'none'}}>{disp}</div>{running?<Btn variant="danger" onClick={stopTimer}>■ Stop &amp; Save</Btn>:<Btn variant="success" onClick={startTimer}>▶ Start</Btn>}</div></Card>
+    <Card><ST>Timer</ST><Inp label="What are you working on?" value={tLabel} onChange={e=>{setTLabel(e.target.value);ls.set('tmrLabel',e.target.value)}} placeholder="Session label‚Ä¶" disabled={running}/><div style={{display:'flex',alignItems:'center',gap:20}}><div style={{fontSize:50,fontWeight:800,fontVariantNumeric:'tabular-nums',letterSpacing:'-1px',color:running?'#10b981':'#e2e8f0',textShadow:running?'0 0 20px #10b98155':'none'}}>{disp}</div>{running?<Btn variant="danger" onClick={stopTimer}>‚ñ† Stop &amp; Save</Btn>:<Btn variant="success" onClick={startTimer}>‚ñ∂ Start</Btn>}</div></Card>
     <Card>
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Log Manual Session</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>📸 Fill from Screenshot</Btn></div>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Log Manual Session</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>üì∏ Fill from Screenshot</Btn></div>
       <SF onSubmit={ms}/>
     </Card>
     <Card><ST>Today's Sessions</ST>
-      {running&&<div style={{display:'flex',alignItems:'center',padding:'10px 13px',background:'#10b98111',border:'1px solid #10b98133',borderRadius:9,marginBottom:8,gap:12}}><div style={{width:8,height:8,borderRadius:99,background:'#10b981',boxShadow:'0 0 8px #10b981'}}/><div style={{flex:1}}><div style={{fontWeight:600,color:'#e2e8f0'}}>{tLabel||'Work Session'}</div><div style={{fontSize:12,color:'#4a4a6a'}}>Running…</div></div><span style={{color:'#10b981',fontWeight:700}}>{fmtHMS(elapsed)}</span></div>}
-      {!todaySess.length&&!running?<div style={{color:'#3a3a5a',textAlign:'center',padding:'24px 0',fontSize:13}}>No sessions today</div>:todaySess.map(s=><div key={s.id} style={{display:'flex',alignItems:'center',padding:'10px 13px',background:'#0b0b10',borderRadius:9,marginBottom:7,gap:12}}><div style={{flex:1}}><div style={{fontWeight:600,color:'#e2e8f0'}}>{s.label}</div><div style={{fontSize:12,color:'#4a4a6a',marginTop:2}}>{s.startTime} → {s.endTime}</div></div><span style={{color:'#10b981',fontWeight:700}}>{fmtHM(s.durationSeconds)}</span><button onClick={()=>onDelete(s.id)} style={{background:'none',border:'none',color:'#3a3a5a',cursor:'pointer',fontSize:16}}>✕</button></div>)}
+      {running&&<div style={{display:'flex',alignItems:'center',padding:'10px 13px',background:'#10b98111',border:'1px solid #10b98133',borderRadius:9,marginBottom:8,gap:12}}><div style={{width:8,height:8,borderRadius:99,background:'#10b981',boxShadow:'0 0 8px #10b981'}}/><div style={{flex:1}}><div style={{fontWeight:600,color:'#e2e8f0'}}>{tLabel||'Work Session'}</div><div style={{fontSize:12,color:'#4a4a6a'}}>Running‚Ä¶</div></div><span style={{color:'#10b981',fontWeight:700}}>{fmtHMS(elapsed)}</span></div>}
+      {!todaySess.length&&!running?<div style={{color:'#3a3a5a',textAlign:'center',padding:'24px 0',fontSize:13}}>No sessions today</div>:todaySess.map(s=><div key={s.id} style={{display:'flex',alignItems:'center',padding:'10px 13px',background:'#0b0b10',borderRadius:9,marginBottom:7,gap:12}}><div style={{flex:1}}><div style={{fontWeight:600,color:'#e2e8f0'}}>{s.label}</div><div style={{fontSize:12,color:'#4a4a6a',marginTop:2}}>{s.startTime} ‚Üí {s.endTime}</div></div><span style={{color:'#10b981',fontWeight:700}}>{fmtHM(s.durationSeconds)}</span><button onClick={()=>onDelete(s.id)} style={{background:'none',border:'none',color:'#3a3a5a',cursor:'pointer',fontSize:16}}>‚úï</button></div>)}
     </Card>
   </div>;
 };
 
-/* ══════════════════════════════════════
+/* ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
    SCHEDULE
-══════════════════════════════════════ */
+‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê */
 const PAL=['#6366f1','#10b981','#f59e0b','#ec4899','#06b6d4','#8b5cf6','#f97316'];
 const HH=64,DS=6,DE=24,TH=DE-DS;
 const Schedule=({events,onAdd,onAddMany,onDelete,apiKey})=>{
@@ -395,24 +395,24 @@ const Schedule=({events,onAdd,onAddMany,onDelete,apiKey})=>{
   const toY=t=>{if(!t)return 0;const[h,m]=t.split(':').map(Number);return((Math.max(DS*60,Math.min(DE*60,h*60+m))-DS*60)/60)*HH};
   const fill=d=>setForm(p=>({...p,title:d.title||p.title,startTime:d.startTime||p.startTime,endTime:d.endTime||p.endTime}));
   const sub=(e,close)=>{e.preventDefault();if(!form.title||!form.startTime||!form.endTime)return;onAdd({id:Date.now(),...form});setForm(blank);close?.()};
-  const importICS=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const p=icsToEvents(ev.target.result);const m=p.filter(x=>x.start?.date&&x.end?.date&&!x.start.allDay).map(x=>({id:Date.now()+Math.random(),title:x.summary,date:x.start.date,startTime:x.start.time,endTime:x.end.time,color:PAL[Math.floor(Math.random()*PAL.length)],fromCal:true}));if(!m.length){setMsg('Only all-day events found.');return}onAddMany(m);setMsg(`✓ Imported ${m.length} events`);setTimeout(()=>setMsg(''),4000)}catch{setMsg('Could not parse .ics file.')}};r.readAsText(f);e.target.value=''};
+  const importICS=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const p=icsToEvents(ev.target.result);const m=p.filter(x=>x.start?.date&&x.end?.date&&!x.start.allDay).map(x=>({id:Date.now()+Math.random(),title:x.summary,date:x.start.date,startTime:x.start.time,endTime:x.end.time,color:PAL[Math.floor(Math.random()*PAL.length)],fromCal:true}));if(!m.length){setMsg('Only all-day events found.');return}onAddMany(m);setMsg(`‚úì Imported ${m.length} events`);setTimeout(()=>setMsg(''),4000)}catch{setMsg('Could not parse .ics file.')}};r.readAsText(f);e.target.value=''};
   const nowY=useMemo(()=>{const n=new Date();return toY(`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`)});
   const EF=({onSubmit})=><form onSubmit={onSubmit}><div style={{display:'grid',gridTemplateColumns:'2fr 1fr',gap:12}}><Inp label="Title" value={form.title} onChange={e=>setForm(p=>({...p,title:e.target.value}))} placeholder="Event title" required/><Inp label="Date" type="date" value={form.date} onChange={e=>setForm(p=>({...p,date:e.target.value}))}/></div><div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:12}}><Inp label="Start" type="time" value={form.startTime} onChange={e=>setForm(p=>({...p,startTime:e.target.value}))} required/><Inp label="End" type="time" value={form.endTime} onChange={e=>setForm(p=>({...p,endTime:e.target.value}))} required/><div><div style={{fontSize:12,color:'#6c6c9a',marginBottom:5,fontWeight:600}}>Color</div><div style={{display:'flex',gap:7,flexWrap:'wrap'}}>{PAL.map(c=><div key={c} onClick={()=>setForm(p=>({...p,color:c}))} style={{width:26,height:26,borderRadius:'50%',background:c,cursor:'pointer',outline:form.color===c?'3px solid #fff':'3px solid transparent',outlineOffset:2,transition:'all 0.15s'}}/>)}</div></div></div><Btn type="submit">Add Event</Btn></form>;
   return<div style={{display:'flex',flexDirection:'column',gap:16}}>
     {ss&&<ScreenshotHelper title="Add Event from Screenshot" section="schedule" apiKey={apiKey} onClose={()=>setSs(false)} onAutoFill={fill}><ST>Event Details</ST><EF onSubmit={e=>sub(e,()=>setSs(false))}/></ScreenshotHelper>}
     <Card style={{borderColor:'#2e2e52',background:'#111120'}}>
       <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:12}}>
-        <div><div style={{fontWeight:700,color:'#e2e8f0',marginBottom:3}}>📅 Google Calendar Sync</div><div style={{fontSize:12,color:'#5a5a8a',lineHeight:1.6}}>In Google Calendar → Settings → Import &amp; Export → Export → download .ics → import below</div></div>
-        <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:6}}><input ref={icsRef} type="file" accept=".ics,text/calendar" style={{display:'none'}} onChange={importICS}/><Btn variant="ghost" onClick={()=>icsRef.current.click()}>Import .ics file</Btn>{msg&&<div style={{fontSize:12,color:msg.startsWith('✓')?'#10b981':'#f59e0b'}}>{msg}</div>}</div>
+        <div><div style={{fontWeight:700,color:'#e2e8f0',marginBottom:3}}>üìÖ Google Calendar Sync</div><div style={{fontSize:12,color:'#5a5a8a',lineHeight:1.6}}>In Google Calendar ‚Üí Settings ‚Üí Import &amp; Export ‚Üí Export ‚Üí download .ics ‚Üí import below</div></div>
+        <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:6}}><input ref={icsRef} type="file" accept=".ics,text/calendar" style={{display:'none'}} onChange={importICS}/><Btn variant="ghost" onClick={()=>icsRef.current.click()}>Import .ics file</Btn>{msg&&<div style={{fontSize:12,color:msg.startsWith('‚úì')?'#10b981':'#f59e0b'}}>{msg}</div>}</div>
       </div>
     </Card>
-    <Card><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Add Event</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>📸 Fill from Screenshot</Btn></div><EF onSubmit={sub}/></Card>
+    <Card><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><ST style={{marginBottom:0}}>Add Event</ST><Btn size="sm" variant="ghost" onClick={()=>setSs(true)}>üì∏ Fill from Screenshot</Btn></div><EF onSubmit={sub}/></Card>
     <Card><ST>Today's Timeline</ST>
       <div style={{position:'relative',paddingLeft:54,marginTop:4}}>
         <div style={{position:'relative',height:TH*HH}}>
           {Array.from({length:TH+1},(_,i)=>{const h=DS+i;const l=h===0||h===24?'12am':h===12?'12pm':h<12?`${h}am`:`${h-12}pm`;return<div key={h} style={{position:'absolute',left:0,right:0,top:i*HH}}><span style={{position:'absolute',left:-52,top:-8,fontSize:11,color:'#3a3a5a',width:44,textAlign:'right'}}>{l}</span><div style={{borderTop:i===0?'1px solid #2e2e42':'1px solid #1a1a2a',width:'100%'}}/></div>})}
           <div style={{position:'absolute',left:0,right:0,top:nowY,borderTop:'2px solid #ef444488',zIndex:10}}><div style={{position:'absolute',left:-6,top:-5,width:10,height:10,borderRadius:'50%',background:'#ef4444'}}/></div>
-          {te.map(ev=>{const top=toY(ev.startTime),height=Math.max(toY(ev.endTime)-top,28);return<div key={ev.id} style={{position:'absolute',left:4,right:0,top,height,background:ev.color+'20',border:`1.5px solid ${ev.color}66`,borderLeft:`4px solid ${ev.color}`,borderRadius:8,padding:'5px 10px',overflow:'hidden'}}><div style={{fontWeight:700,fontSize:13,color:ev.color}}>{ev.title}</div>{height>32&&<div style={{fontSize:11,color:'#5a5a8a'}}>{ev.startTime} – {ev.endTime}</div>}<button onClick={()=>onDelete(ev.id)} style={{position:'absolute',top:4,right:6,background:'none',border:'none',color:'#3a3a5a',cursor:'pointer',fontSize:12}}>✕</button></div>})}
+          {te.map(ev=>{const top=toY(ev.startTime),height=Math.max(toY(ev.endTime)-top,28);return<div key={ev.id} style={{position:'absolute',left:4,right:0,top,height,background:ev.color+'20',border:`1.5px solid ${ev.color}66`,borderLeft:`4px solid ${ev.color}`,borderRadius:8,padding:'5px 10px',overflow:'hidden'}}><div style={{fontWeight:700,fontSize:13,color:ev.color}}>{ev.title}</div>{height>32&&<div style={{fontSize:11,color:'#5a5a8a'}}>{ev.startTime} ‚Äì {ev.endTime}</div>}<button onClick={()=>onDelete(ev.id)} style={{position:'absolute',top:4,right:6,background:'none',border:'none',color:'#3a3a5a',cursor:'pointer',fontSize:12}}>‚úï</button></div>})}
           {!te.length&&<div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',color:'#3a3a5a',fontSize:13}}>No events today</div>}
         </div>
       </div>
@@ -420,9 +420,9 @@ const Schedule=({events,onAdd,onAddMany,onDelete,apiKey})=>{
   </div>;
 };
 
-/* ══════════════════════════════════════
+/* ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
    SUMMARY
-══════════════════════════════════════ */
+‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê */
 const Summary=({meals,sleep,work,events,goals,timerEl,timerOn})=>{
   const td=meals.filter(m=>m.date===todayStr());
   const cal=td.reduce((a,m)=>a+m.calories,0),pro=td.reduce((a,m)=>a+m.protein,0),car=td.reduce((a,m)=>a+m.carbs,0),fat=td.reduce((a,m)=>a+m.fat,0);
@@ -437,19 +437,19 @@ const Summary=({meals,sleep,work,events,goals,timerEl,timerOn})=>{
   return<div style={{display:'flex',flexDirection:'column',gap:16}}>
     <div style={{fontSize:13,color:'#5a5a8a'}}>{now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</div>
     <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:16}}>
-      <Card><div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}><span style={{fontSize:18}}>🍽</span><span style={{fontSize:12,color:'#6c6c9a',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.06em'}}>Calories</span></div><div style={{fontSize:34,fontWeight:800,color:'#e2e8f0',lineHeight:1,marginBottom:2}}>{cal.toLocaleString()}</div><div style={{fontSize:12,color:'#4a4a6a',marginBottom:10}}>of {goals.calories.toLocaleString()}</div><PB value={cal} max={goals.calories} color="#6366f1" showLabel={false}/></Card>
-      <Card><div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}><span style={{fontSize:18}}>🌙</span><span style={{fontSize:12,color:'#6c6c9a',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.06em'}}>Sleep</span></div>{ls2?<><div style={{fontSize:34,fontWeight:800,lineHeight:1,marginBottom:2,color:sq(ls2.hoursSlept)}}>{ls2.hoursSlept}h</div><div style={{fontSize:12,color:'#4a4a6a',marginBottom:10}}>{ls2.bedtime||'?'} → {ls2.wakeTime||'?'}</div><PB value={ls2.hoursSlept} max={9} color={sq(ls2.hoursSlept)} showLabel={false}/></>:<div style={{color:'#3a3a5a',fontSize:13,marginTop:8}}>No data</div>}</Card>
-      <Card><div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}><span style={{fontSize:18}}>⏱</span><span style={{fontSize:12,color:'#6c6c9a',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.06em'}}>Work</span></div><div style={{fontSize:34,fontWeight:800,color:'#e2e8f0',lineHeight:1,marginBottom:2}}>{fmtHM(twSec)}</div><div style={{fontSize:12,color:'#4a4a6a',marginBottom:10}}>{fmtHM(wkSec)} this week</div><PB value={twSec/3600} max={8} color="#10b981" showLabel={false}/></Card>
+      <Card><div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}><span style={{fontSize:18}}>üçΩ</span><span style={{fontSize:12,color:'#6c6c9a',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.06em'}}>Calories</span></div><div style={{fontSize:34,fontWeight:800,color:'#e2e8f0',lineHeight:1,marginBottom:2}}>{cal.toLocaleString()}</div><div style={{fontSize:12,color:'#4a4a6a',marginBottom:10}}>of {goals.calories.toLocaleString()}</div><PB value={cal} max={goals.calories} color="#6366f1" showLabel={false}/></Card>
+      <Card><div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}><span style={{fontSize:18}}>üåô</span><span style={{fontSize:12,color:'#6c6c9a',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.06em'}}>Sleep</span></div>{ls2?<><div style={{fontSize:34,fontWeight:800,lineHeight:1,marginBottom:2,color:sq(ls2.hoursSlept)}}>{ls2.hoursSlept}h</div><div style={{fontSize:12,color:'#4a4a6a',marginBottom:10}}>{ls2.bedtime||'?'} ‚Üí {ls2.wakeTime||'?'}</div><PB value={ls2.hoursSlept} max={9} color={sq(ls2.hoursSlept)} showLabel={false}/></>:<div style={{color:'#3a3a5a',fontSize:13,marginTop:8}}>No data</div>}</Card>
+      <Card><div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}><span style={{fontSize:18}}>‚è±</span><span style={{fontSize:12,color:'#6c6c9a',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.06em'}}>Work</span></div><div style={{fontSize:34,fontWeight:800,color:'#e2e8f0',lineHeight:1,marginBottom:2}}>{fmtHM(twSec)}</div><div style={{fontSize:12,color:'#4a4a6a',marginBottom:10}}>{fmtHM(wkSec)} this week</div><PB value={twSec/3600} max={8} color="#10b981" showLabel={false}/></Card>
     </div>
     <Card><ST>Macros</ST><div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:16}}><PB value={pro} max={goals.protein} color="#6366f1" label="Protein" unit="g"/><PB value={car} max={goals.carbs} color="#10b981" label="Carbs" unit="g"/><PB value={fat} max={goals.fat} color="#f59e0b" label="Fat" unit="g"/></div></Card>
-    <Card><ST>Today's Schedule</ST>{!te.length?<div style={{color:'#3a3a5a',fontSize:13,padding:'12px 0'}}>No events scheduled</div>:te.map(ev=>{const ic=ev.startTime<=ns&&ev.endTime>=ns,ip=ev.endTime<ns;return<div key={ev.id} style={{display:'flex',alignItems:'center',gap:12,padding:'10px 13px',background:'#0b0b10',borderRadius:9,marginBottom:8,borderLeft:`4px solid ${ip?'#2e2e42':ev.color}`,opacity:ip?0.45:1}}><div style={{flex:1}}><div style={{fontWeight:600,color:'#e2e8f0'}}>{ev.title}</div><div style={{fontSize:12,color:'#4a4a6a',marginTop:2}}>{ev.startTime} – {ev.endTime}</div></div>{ic&&<Badge color="#10b981">NOW</Badge>}{!ic&&ev.id===nxt?.id&&<Badge color="#6366f1">NEXT</Badge>}</div>})}</Card>
+    <Card><ST>Today's Schedule</ST>{!te.length?<div style={{color:'#3a3a5a',fontSize:13,padding:'12px 0'}}>No events scheduled</div>:te.map(ev=>{const ic=ev.startTime<=ns&&ev.endTime>=ns,ip=ev.endTime<ns;return<div key={ev.id} style={{display:'flex',alignItems:'center',gap:12,padding:'10px 13px',background:'#0b0b10',borderRadius:9,marginBottom:8,borderLeft:`4px solid ${ip?'#2e2e42':ev.color}`,opacity:ip?0.45:1}}><div style={{flex:1}}><div style={{fontWeight:600,color:'#e2e8f0'}}>{ev.title}</div><div style={{fontSize:12,color:'#4a4a6a',marginTop:2}}>{ev.startTime} ‚Äì {ev.endTime}</div></div>{ic&&<Badge color="#10b981">NOW</Badge>}{!ic&&ev.id===nxt?.id&&<Badge color="#6366f1">NEXT</Badge>}</div>})}</Card>
   </div>;
 };
 
-/* ══════════════════════════════════════
+/* ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
    APP
-══════════════════════════════════════ */
-const TABS=[{id:'summary',label:'Summary',icon:'◈'},{id:'diet',label:'Diet',icon:'🍽'},{id:'sleep',label:'Sleep',icon:'🌙'},{id:'work',label:'Work',icon:'⏱'},{id:'schedule',label:'Schedule',icon:'📅'}];
+‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê */
+const TABS=[{id:'summary',label:'Summary',icon:'‚óà'},{id:'diet',label:'Diet',icon:'üçΩ'},{id:'sleep',label:'Sleep',icon:'üåô'},{id:'work',label:'Work',icon:'‚è±'},{id:'schedule',label:'Schedule',icon:'üìÖ'}];
 
 const App=()=>{
   const [tab,setTab]       = useState('summary');
@@ -509,7 +509,7 @@ const App=()=>{
   },[meals,sleep,work,events,goals]);
 
   const syncDot = {idle:'#3a3a5a',syncing:'#f59e0b',synced:'#10b981',error:'#ef4444'}[syncSt];
-  const syncTip = {idle:'Not configured',syncing:'Syncing…',synced:'Synced across devices ✓',error:'Sync error — check Supabase settings'}[syncSt];
+  const syncTip = {idle:'Not configured',syncing:'Syncing‚Ä¶',synced:'Synced across devices ‚úì',error:'Sync error ‚Äî check Supabase settings'}[syncSt];
 
   return<div style={{minHeight:'100vh',background:'#0b0b10'}}>
     <header style={{position:'sticky',top:0,zIndex:100,background:'#0f0f17',borderBottom:'1px solid #1e1e2e'}}>
@@ -520,7 +520,7 @@ const App=()=>{
         </nav>
         <div style={{display:'flex',alignItems:'center',gap:10}}>
           {conf.sbUrl&&<div title={syncTip} style={{width:8,height:8,borderRadius:'50%',background:syncDot,boxShadow:`0 0 6px ${syncDot}`,animation:syncSt==='syncing'?'pulse 1s ease infinite':'none',flexShrink:0}}/>}
-          <button onClick={()=>setShowSet(v=>!v)} style={{background:showSet?'#22223a':'none',border:'none',cursor:'pointer',color:'#4a4a6a',fontSize:18,padding:'8px 10px',borderRadius:8}}>⚙</button>
+          <button onClick={()=>setShowSet(v=>!v)} style={{background:showSet?'#22223a':'none',border:'none',cursor:'pointer',color:'#4a4a6a',fontSize:18,padding:'8px 10px',borderRadius:8}}>‚öô</button>
         </div>
       </div>
 
@@ -530,34 +530,34 @@ const App=()=>{
 
             {/* Claude API */}
             <div>
-              <div style={{fontWeight:700,color:'#e2e8f0',marginBottom:4}}>✨ Claude AI (screenshot reading)</div>
-              <div style={{fontSize:12,color:'#5a5a8a',marginBottom:12,lineHeight:1.6}}>Get an API key at <strong style={{color:'#a5b4fc'}}>console.anthropic.com</strong> → API Keys. ~$0.001/screenshot.</div>
-              <Inp label="Anthropic API Key" type="password" value={conf.anthropicKey} onChange={e=>setConf(p=>({...p,anthropicKey:e.target.value}))} placeholder="sk-ant-…"/>
+              <div style={{fontWeight:700,color:'#e2e8f0',marginBottom:4}}>‚ú® Claude AI (screenshot reading)</div>
+              <div style={{fontSize:12,color:'#5a5a8a',marginBottom:12,lineHeight:1.6}}>Get an API key at <strong style={{color:'#a5b4fc'}}>console.anthropic.com</strong> ‚Üí API Keys. ~$0.001/screenshot.</div>
+              <Inp label="Anthropic API Key" type="password" value={conf.anthropicKey} onChange={e=>setConf(p=>({...p,anthropicKey:e.target.value}))} placeholder="sk-ant-‚Ä¶"/>
             </div>
 
             {/* Supabase */}
             <div>
-              <div style={{fontWeight:700,color:'#e2e8f0',marginBottom:4}}>☁️ Supabase (phone sync — free)</div>
+              <div style={{fontWeight:700,color:'#e2e8f0',marginBottom:4}}>‚òÅÔ∏è Supabase (phone sync ‚Äî free)</div>
               <div style={{fontSize:12,color:'#5a5a8a',marginBottom:12,lineHeight:1.6}}>
                 1. Create free account at <strong style={{color:'#a5b4fc'}}>supabase.com</strong><br/>
-                2. New project → SQL Editor → run:<br/>
+                2. New project ‚Üí SQL Editor ‚Üí run:<br/>
                 <code style={{background:'#1e1e2e',padding:'6px 10px',borderRadius:6,display:'block',marginTop:6,fontSize:11,color:'#10b981',lineHeight:1.8}}>
                   create table dashboard (key text primary key, value jsonb);<br/>
                   alter table dashboard enable row level security;<br/>
                   create policy "open" on dashboard for all to anon using (true) with check (true);
                 </code>
-                3. Settings → API → copy URL &amp; anon key below
+                3. Settings ‚Üí API ‚Üí copy URL &amp; anon key below
               </div>
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
                 <Inp label="Project URL" value={conf.sbUrl} onChange={e=>setConf(p=>({...p,sbUrl:e.target.value}))} placeholder="https://xxxx.supabase.co"/>
-                <Inp label="Anon Key" type="password" value={conf.sbKey} onChange={e=>setConf(p=>({...p,sbKey:e.target.value}))} placeholder="eyJ…"/>
+                <Inp label="Anon Key" type="password" value={conf.sbKey} onChange={e=>setConf(p=>({...p,sbKey:e.target.value}))} placeholder="eyJ‚Ä¶"/>
               </div>
             </div>
           </div>
           <div style={{marginTop:16,display:'flex',gap:12,alignItems:'center'}}>
             <Btn onClick={()=>{ls.set('conf',conf);SB.init(conf.sbUrl,conf.sbKey);setShowSet(false)}}>Save Settings</Btn>
-            {syncSt==='error'&&<span style={{color:'#ef4444',fontSize:13}}>Sync error — double-check your Supabase URL and anon key, and make sure you ran the SQL above.</span>}
-            {syncSt==='synced'&&<span style={{color:'#10b981',fontSize:13}}>✓ Syncing across devices</span>}
+            {syncSt==='error'&&<span style={{color:'#ef4444',fontSize:13}}>Sync error ‚Äî double-check your Supabase URL and anon key, and make sure you ran the SQL above.</span>}
+            {syncSt==='synced'&&<span style={{color:'#10b981',fontSize:13}}>‚úì Syncing across devices</span>}
           </div>
         </div>
       </div>}
